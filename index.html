@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defuse — Customer Recovery Software</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131f;
+            --surface-hover: #1a1a2e;
+            --border: #2a2a3e;
+            --border-glow: #3a3a5e;
+            --text: #f0f0f5;
+            --text-muted: #8a8a9e;
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.3);
+            --danger: #ef4444;
+            --success: #10b981;
+            --info: #3b82f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated background grid */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(245, 158, 11, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(245, 158, 11, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: -20%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-glow-2 {
+            position: fixed;
+            bottom: -20%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        /* Navigation */
+        nav {
+            position: relative;
+            z-index: 10;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .nav-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 100px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 100px;
+            color: var(--danger);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a5a5b5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--accent), #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Main App */
+        .app-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .panel-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .icon-input { background: rgba(59, 130, 246, 0.1); color: var(--info); }
+        .icon-output { background: rgba(245, 158, 11, 0.1); color: var(--accent); }
+
+        /* Input Area */
+        .input-wrapper {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text);
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .char-count {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .defuse-btn {
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            color: #000;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 20px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .defuse-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .defuse-btn:active {
+            transform: translateY(0);
+        }
+
+        .defuse-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .defuse-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            transform: rotate(30deg);
+            transition: all 0.6s;
+        }
+
+        .defuse-btn:hover::after {
+            left: 100%;
+        }
+
+        /* Ghost Preview */
+        .ghost-preview {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(245, 158, 11, 0.03);
+            border: 1px dashed rgba(245, 158, 11, 0.2);
+            border-radius: 12px;
+            transition: all 0.5s ease;
+        }
+
+        .ghost-preview.hidden {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            height: 0;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .ghost-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ghost-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .ghost-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        /* Output Panel States */
+        .output-content {
+            position: relative;
+            min-height: 300px;
+        }
+
+        .empty-state {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 2rem;
+            transition: all 0.5s ease;
+        }
+
+        .empty-state.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .empty-illustration {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        /* Theater Animation */
+        .theater {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            gap: 1.5rem;
+        }
+
+        .theater.active {
+            display: flex;
+        }
+
+        .theater-spinner {
+            width: 60px;
+            height: 60px;
+            position: relative;
+        }
+
+        .theater-spinner::before,
+        .theater-spinner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid transparent;
+        }
+
+        .theater-spinner::before {
+            border-top-color: var(--accent);
+            animation: spin 1s linear infinite;
+        }
+
+        .theater-spinner::after {
+            border-top-color: var(--info);
+            animation: spin 1.5s linear infinite reverse;
+            inset: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .theater-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .theater-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            opacity: 0.4;
+            transition: all 0.4s ease;
+        }
+
+        .theater-step.active {
+            opacity: 1;
+            border-color: var(--accent);
+            background: rgba(245, 158, 11, 0.05);
+            transform: translateX(5px);
+        }
+
+        .theater-step.done {
+            opacity: 0.6;
+            border-color: var(--success);
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            background: var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .theater-step.active .step-icon {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .theater-step.done .step-icon {
+            background: var(--success);
+            color: #fff;
+        }
+
+        .step-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Results */
+        .results {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .results.active {
+            display: flex;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            border-color: var(--border-glow);
+            transform: translateX(4px);
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .result-card.threat-high::before { background: var(--danger); }
+        .result-card.threat-med::before { background: var(--accent); }
+        .result-card.threat-low::before { background: var(--success); }
+        .result-card.action::before { background: var(--info); }
+        .result-card.reply::before { background: var(--accent); }
+
+        .result-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .result-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .threat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 800;
+        }
+
+        .threat-high {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .confidence {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .confidence-bar {
+            width: 60px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+
+        .reply-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text);
+            font-style: italic;
+        }
+
+        .copy-btn {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .copy-btn.copied {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        /* Success Banner */
+        .success-banner {
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            color: var(--success);
+            animation: slideIn 0.5s ease;
+        }
+
+        .success-banner.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Compatibility Strip */
+        .compat-strip {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .compat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .compat-icons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .compat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .compat-item:hover {
+            border-color: var(--border-glow);
+            color: var(--text);
+        }
+
+        /* Usage Counter */
+        .usage-counter {
+            position: fixed;
+            top: 1.5rem;
+            right: 2rem;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .usage-counter.warning {
+            border-color: var(--accent);
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        .usage-dots {
+            display: flex;
+            gap: 0.35rem;
+        }
+
+        .usage-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .usage-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .usage-dot.used {
+            background: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        /* Paywall Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent), #f97316);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        .modal h2 {
+            font-size: 1.75rem;
+            font-weight: 900;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .modal p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .price-tag {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .price-detail {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            color: #000;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .pay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .pay-sub {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .blur-preview {
+            position: relative;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .blur-text {
+            filter: blur(4px);
+            opacity: 0.5;
+            user-select: none;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .blur-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 10, 15, 0.4);
+            border-radius: 12px;
+        }
+
+        .blur-lock {
+            text-align: center;
+        }
+
+        .blur-lock-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .blur-lock-text {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+        }
+
+        .footer-tagline {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-glow);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .usage-counter {
+                top: auto;
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+                justify-content: center;
+            }
+            
+            .modal {
+                padding: 2rem;
+            }
+            
+            .price {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
+
+    <!-- Usage Counter -->
+    <div class="usage-counter" id="usageCounter">
+        <span>Free defuses</span>
+        <div class="usage-dots">
+            <div class="usage-dot active" id="dot1"></div>
+            <div class="usage-dot active" id="dot2"></div>
+            <div class="usage-dot active" id="dot3"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <div class="logo-icon">🛡️</div>
+            <span>Defuse</span>
+        </div>
+        <div class="nav-badge">Customer Recovery Software</div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-tag">
+            <span>⚡</span>
+            <span>The next angry customer doesn't wait</span>
+        </div>
+        <h1>
+            Your customer just sent a message that could cost you <span>$2,000</span>. Fix it in 8 seconds.
+        </h1>
+        <p>
+            Built for the message you're dreading opening. We tell you exactly what they're feeling, what they actually want, and what to say so they thank you instead of churning.
+        </p>
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value">12 min</div>
+                <div class="stat-label">Saved per message</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">94%</div>
+                <div class="stat-label">Intent match</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">$7</div>
+                <div class="stat-label">Once. Forever.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App -->
+    <div class="app-container">
+        <!-- Input Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon icon-input">📨</div>
+                <span>Paste the message</span>
+            </div>
+            
+            <div class="input-wrapper">
+                <textarea 
+                    id="messageInput" 
+                    placeholder="Paste the angry customer message here..."
+                ></textarea>
+                
+                <div class="input-footer">
+                    <span class="char-count" id="charCount">0 characters</span>
+                    <button class="defuse-btn" id="defuseBtn" onclick="handleDefuse()">
+                        <span>🛡️</span>
+                        <span>Defuse this</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ghost Preview -->
+            <div class="ghost-preview" id="ghostPreview">
+                <div class="ghost-title">
+                    <span>✨</span>
+                    <span>In 8 seconds, you'll see:</span>
+                </div>
+                <div class="ghost-item">
+                    <div class="ghost-dot"></div>
+                    <span>What they're really feeling</span>
+                </div>
+                <div class="ghost-item">
+                    <div class="ghost-dot"></div>
+                    <span>The exact move to make</span>
+                </div>
+                <div class="ghost-item">
+                    <div class="ghost-dot"></div>
+                    <span>A reply that sounds like you, but sharper</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon icon-output">⚡</div>
+                <span>Recovery Plan</span>
+            </div>
+
+            <div class="output-content">
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-illustration">🎯</div>
+                    <p>Paste a customer message and hit "Defuse this"</p>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.6;">We'll analyze tone, intent, and draft your response</p>
+                </div>
+
+                <!-- Theater -->
+                <div class="theater" id="theater">
+                    <div class="theater-spinner"></div>
+                    <div class="theater-steps">
+                        <div class="theater-step" id="step1">
+                            <div class="step-icon">1</div>
+                            <div class="step-text">Reading between the lines...</div>
+                        </div>
+                        <div class="theater-step" id="step2">
+                            <div class="step-icon">2</div>
+                            <div class="step-text">Calculating best outcome...</div>
+                        </div>
+                        <div class="theater-step" id="step3">
+                            <div class="step-icon">3</div>
+                            <div class="step-text">Drafting your response...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="results" id="results">
+                    <div class="success-banner" id="successBanner">
+                        <span>✅</span>
+                        <span id="successText">You handled that in 8 seconds</span>
+                    </div>
+
+                    <div class="result-card threat-high" id="threatCard">
+                        <div class="result-label">
+                            <span>Threat Level</span>
+                            <div class="confidence">
+                                <span>Confidence</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                                </div>
+                                <span id="confidenceText">94%</span>
+                            </div>
+                        </div>
+                        <div class="result-value">
+                            <span class="threat-badge" id="threatBadge">
+                                <span>🔴</span>
+                                <span>High — Angry + Escalation Risk</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="result-card action">
+                        <div class="result-label">
+                            <span>Move</span>
+                        </div>
+                        <div class="result-value" id="actionText">
+                            Appease + Immediate Refund + Senior Follow-up
+                        </div>
+                    </div>
+
+                    <div class="result-card reply">
+                        <div class="result-label">
+                            <span>Send this. Now.</span>
+                        </div>
+                        <div class="reply-text" id="replyText">
+                            "I completely understand your frustration, and I sincerely apologize for the inconvenience. I've processed a full refund immediately—it should appear in 2-3 business days. I'm also escalating this to our senior team to ensure it never happens again. You'll hear from them within 24 hours."
+                        </div>
+                        <button class="copy-btn" id="copyBtn" onclick="handleCopy()">
+                            <span>📋</span>
+                            <span id="copyText">Copy to clipboard</span>
+                        </button>
+                    </div>
+
+                    <div class="compat-strip">
+                        <span class="compat-label">Paste into:</span>
+                        <div class="compat-icons">
+                            <div class="compat-item">📧 Gmail</div>
+                            <div class="compat-item">🎫 Zendesk</div>
+                            <div class="compat-item">💬 Intercom</div>
+                            <div class="compat-item">📱 WhatsApp</div>
+                            <div class="compat-item">✈️ Anywhere</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paywall Modal -->
+    <div class="modal-overlay" id="paywallModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closePaywall()">✕</button>
+            
+            <div class="modal-icon">🔒</div>
+            <h2>You just saved 12 minutes.</h2>
+            <p>The next angry customer doesn't wait. Unlock unlimited recovery plans and never lose another customer to a bad reply.</p>
+            
+            <div class="blur-preview">
+                <div class="blur-text">
+                    "I completely understand your frustration, and I sincerely apologize for the inconvenience. I've processed a full refund immediately..."
+                </div>
+                <div class="blur-overlay">
+                    <div class="blur-lock">
+                        <div class="blur-lock-icon">🔒</div>
+                        <div class="blur-lock-text">Unlock to see full reply</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="price-tag">
+                <span class="price">$7</span>
+                <span class="price-detail">Unlimited. Forever.</span>
+            </div>
+
+            <button class="pay-btn" onclick="handlePayment()">
+                Unlock Defuse — $7 One-Time
+            </button>
+            
+            <div class="pay-sub">
+                Hiring a support writer costs $4,200/mo. This is $7 once.
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-tagline">You're not "doing support." You're preventing churn.</div>
+        <p>This is your weapon.</p>
+    </footer>
+
+    <script>
+        // State
+        let usageCount = 0;
+        const maxFreeUses = 3;
+        let isProcessing = false;
+        let hasPaid = false;
+
+        // DOM Elements
+        const messageInput = document.getElementById('messageInput');
+        const charCount = document.getElementById('charCount');
+        const defuseBtn = document.getElementById('defuseBtn');
+        const ghostPreview = document.getElementById('ghostPreview');
+        const emptyState = document.getElementById('emptyState');
+        const theater = document.getElementById('theater');
+        const results = document.getElementById('results');
+        const successBanner = document.getElementById('successBanner');
+        const copyBtn = document.getElementById('copyBtn');
+        const paywallModal = document.getElementById('paywallModal');
+        const usageCounter = document.getElementById('usageCounter');
+
+        // Character count
+        messageInput.addEventListener('input', () => {
+            const len = messageInput.value.length;
+            charCount.textContent = `${len} character${len !== 1 ? 's' : ''}`;
+            
+            if (len > 0) {
+                ghostPreview.classList.add('hidden');
+            } else {
+                ghostPreview.classList.remove('hidden');
+                resetOutput();
+            }
+        });
+
+        function resetOutput() {
+            emptyState.classList.remove('hidden');
+            theater.classList.remove('active');
+            results.classList.remove('active');
+            successBanner.classList.remove('active');
+        }
+
+        async function handleDefuse() {
+            const text = messageInput.value.trim();
+            if (!text || isProcessing) return;
+
+            // Check if should show paywall (on 4th use, before processing)
+            if (usageCount >= maxFreeUses && !hasPaid) {
+                showPaywall();
+                return;
+            }
+
+            isProcessing = true;
+            defuseBtn.disabled = true;
+            defuseBtn.innerHTML = '<span>⏳</span><span>Analyzing...</span>';
+
+            // Hide empty state, show theater
+            emptyState.classList.add('hidden');
+            theater.classList.add('active');
+            results.classList.remove('active');
+
+            // Theater animation
+            const steps = [
+                document.getElementById('step1'),
+                document.getElementById('step2'),
+                document.getElementById('step3')
+            ];
+
+            // Step 1
+            steps[0].classList.add('active');
+            await sleep(400);
+            steps[0].classList.remove('active');
+            steps[0].classList.add('done');
+            steps[0].querySelector('.step-icon').textContent = '✓';
+
+            // Step 2
+            steps[1].classList.add('active');
+            await sleep(400);
+            steps[1].classList.remove('active');
+            steps[1].classList.add('done');
+            steps[1].querySelector('.step-icon').textContent = '✓';
+
+            // Step 3
+            steps[2].classList.add('active');
+            await sleep(400);
+            steps[2].classList.remove('active');
+            steps[2].classList.add('done');
+            steps[2].querySelector('.step-icon').textContent = '✓';
+
+            await sleep(200);
+
+            // Hide theater, show results
+            theater.classList.remove('active');
+            results.classList.add('active');
+
+            // Animate confidence bar
+            setTimeout(() => {
+                document.getElementById('confidenceFill').style.width = '94%';
+            }, 100);
+
+            // Generate contextual response based on input
+            generateResponse(text);
+
+            // Show success banner
+            successBanner.classList.add('active');
+
+            // Increment usage
+            usageCount++;
+            updateUsageDots();
+
+            // Reset button
+            isProcessing = false;
+            defuseBtn.disabled = false;
+            defuseBtn.innerHTML = '<span>🛡️</span><span>Defuse this</span>';
+
+            // If this was the last free use, prepare paywall for next time
+            if (usageCount === maxFreeUses) {
+                setTimeout(() => {
+                    usageCounter.classList.add('warning');
+                }, 1000);
+            }
+        }
+
+        function generateResponse(input) {
+            const lower = input.toLowerCase();
+            let threat = 'high';
+            let threatEmoji = '🔴';
+            let threatText = 'High — Angry + Escalation Risk';
+            let action = 'Appease + Immediate Refund + Senior Follow-up';
+            let reply = '';
+
+            // Simple keyword-based generation for demo
+            if (lower.includes('refund') || lower.includes('money') || lower.includes('charge')) {
+                action = 'Immediate Full Refund + Escalation Prevention';
+                reply = `I completely understand your frustration, and I sincerely apologize for the inconvenience. I've processed a full refund of $[amount] immediately—it should appear in your account within 2-3 business days. 
+
+I'm also personally ensuring this gets reviewed by our senior team so we can prevent this from happening again. You'll receive a follow-up from them within 24 hours with additional details.
+
+Thank you for your patience, and again, I'm truly sorry we let you down.`;
+            } else if (lower.includes('slow') || lower.includes('late') || lower.includes('shipping') || lower.includes('delivery')) {
+                threat = 'med';
+                threatEmoji = '🟠';
+                threatText = 'Medium — Frustrated + Loyalty at Risk';
+                action = 'Acknowledge Delay + Compensation + Expedite';
+                reply = `I sincerely apologize for the delay in your delivery—I know how frustrating it is when you're waiting for something you need.
+
+I've just expedited your shipment with priority tracking and added a $20 credit to your account for the inconvenience. Your new tracking number is [TRACKING], and it should arrive by [DATE].
+
+We value your loyalty, and I'm personally monitoring this to make sure it gets to you on time.`;
+            } else if (lower.includes('bug') || lower.includes('broken') || lower.includes('error') || lower.includes('not working')) {
+                action = 'Acknowledge Issue + Workaround + Fix Timeline';
+                reply = `Thank you for reporting this—I'm sorry you're experiencing this issue. Our team has identified this bug and is actively working on a fix scheduled for release by [DATE].
+
+In the meantime, here's a quick workaround that should resolve it immediately: [WORKAROUND].
+
+I've also added 2 free months to your subscription for the trouble. I'll personally notify you the moment the fix is live.`;
+            } else if (lower.includes('cancel') || lower.includes('unsubscribe') || lower.includes('close account')) {
+                threat = 'high';
+                threatEmoji = '🔴';
+                threatText = 'Critical — Churn Imminent';
+                action = 'Retention Offer + Personal Call + Win-back';
+                reply = `I'm really sorry to hear you're considering leaving us. Before you go, I'd love the chance to make this right.
+
+I've applied a 50% discount to your next 3 months and scheduled a quick 10-minute call with our customer success lead for tomorrow. No pressure—just want to understand what went wrong and see if we can fix it.
+
+If after the call you still want to cancel, I'll process it immediately with no questions asked. Would [TIME] work for you?`;
+            } else {
+                threat = 'med';
+                threatEmoji = '🟠';
+                threatText = 'Medium — Dissatisfied + Needs Validation';
+                action = 'Validate Concern + Specific Solution + Follow-up';
+                reply = `Thank you for reaching out, and I completely understand why this would be concerning. Your experience matters deeply to us, and I want to make sure we get this resolved properly.
+
+Here's exactly what I'm going to do: [SPECIFIC ACTION]. I expect this to be fully resolved by [TIMEFRAME], and I'll personally check in with you then to confirm everything is working as expected.
+
+If there's anything else I can do in the meantime, please don't hesitate to let me know.`;
+            }
+
+            // Update UI
+            const threatCard = document.getElementById('threatCard');
+            threatCard.className = `result-card threat-${threat}`;
+            document.getElementById('threatBadge').innerHTML = `<span>${threatEmoji}</span><span>${threatText}</span>`;
+            document.getElementById('actionText').textContent = action;
+            document.getElementById('replyText').textContent = reply;
+            
+            // Randomize confidence slightly for realism
+            const conf = 92 + Math.floor(Math.random() * 5);
+            document.getElementById('confidenceText').textContent = conf + '%';
+        }
+
+        function updateUsageDots() {
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`dot${i}`);
+                if (i <= usageCount) {
+                    dot.classList.remove('active');
+                    dot.classList.add('used');
+                }
+            }
+        }
+
+        async function handleCopy() {
+            const reply = document.getElementById('replyText').textContent;
+            
+            try {
+                await navigator.clipboard.writeText(reply);
+                copyBtn.classList.add('copied');
+                copyBtn.innerHTML = '<span>✅</span><span>Copied. Go end this.</span>';
+                
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.innerHTML = '<span>📋</span><span>Copy to clipboard</span>';
+                }, 2500);
+            } catch (err) {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = reply;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                
+                copyBtn.classList.add('copied');
+                copyBtn.innerHTML = '<span>✅</span><span>Copied. Go end this.</span>';
+                
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.innerHTML = '<span>📋</span><span>Copy to clipboard</span>';
+                }, 2500);
+            }
+        }
+
+        function showPaywall() {
+            paywallModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePaywall() {
+            paywallModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handlePayment() {
+            // Simulate payment
+            const btn = document.querySelector('.pay-btn');
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                hasPaid = true;
+                closePaywall();
+                usageCounter.style.display = 'none';
+                
+                // Re-trigger the defuse if they had text waiting
+                if (messageInput.value.trim()) {
+                    handleDefuse();
+                }
+            }, 1500);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Close modal on overlay click
+        paywallModal.addEventListener('click', (e) => {
+            if (e.target === paywallModal) {
+                closePaywall();
+            }
+        });
+
+        // Enter key to submit
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.metaKey) {
+                handleDefuse();
+            }
+        });
+    </script>
+</body>
+</html>
