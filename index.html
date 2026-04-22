@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Defuse — Customer Recovery Software</title>
+    <title>Defuse — Turn Angry Messages Into Saved Customers</title>
     <style>
         * {
             margin: 0;
@@ -24,6 +24,8 @@
             --danger: #ef4444;
             --success: #10b981;
             --info: #3b82f6;
+            --retention: #8b5cf6;
+            --retention-glow: rgba(139, 92, 246, 0.3);
         }
 
         body {
@@ -35,7 +37,6 @@
             line-height: 1.6;
         }
 
-        /* Animated background grid */
         .bg-grid {
             position: fixed;
             top: 0;
@@ -68,7 +69,7 @@
             right: -10%;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 70%);
             pointer-events: none;
             z-index: 0;
             animation: float 25s ease-in-out infinite reverse;
@@ -79,7 +80,6 @@
             50% { transform: translate(30px, -30px); }
         }
 
-        /* Navigation */
         nav {
             position: relative;
             z-index: 10;
@@ -123,7 +123,6 @@
             font-weight: 600;
         }
 
-        /* Hero */
         .hero {
             position: relative;
             z-index: 10;
@@ -145,12 +144,6 @@
             font-size: 0.875rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
         }
 
         .hero h1 {
@@ -200,7 +193,6 @@
             color: var(--text-muted);
         }
 
-        /* Main App */
         .app-container {
             position: relative;
             z-index: 10;
@@ -255,7 +247,6 @@
         .icon-input { background: rgba(59, 130, 246, 0.1); color: var(--info); }
         .icon-output { background: rgba(245, 158, 11, 0.1); color: var(--accent); }
 
-        /* Input Area */
         .input-wrapper {
             position: relative;
         }
@@ -330,28 +321,6 @@
             transform: none;
         }
 
-        .defuse-btn::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent 30%,
-                rgba(255, 255, 255, 0.1) 50%,
-                transparent 70%
-            );
-            transform: rotate(30deg);
-            transition: all 0.6s;
-        }
-
-        .defuse-btn:hover::after {
-            left: 100%;
-        }
-
-        /* Ghost Preview */
         .ghost-preview {
             margin-top: 2rem;
             padding: 1.5rem;
@@ -401,7 +370,6 @@
             opacity: 0.5;
         }
 
-        /* Output Panel States */
         .output-content {
             position: relative;
             min-height: 300px;
@@ -438,7 +406,6 @@
             border: 1px solid var(--border);
         }
 
-        /* Theater Animation */
         .theater {
             display: none;
             flex-direction: column;
@@ -524,6 +491,7 @@
             font-size: 0.75rem;
             background: var(--border);
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .theater-step.active .step-icon {
@@ -541,7 +509,6 @@
             font-weight: 600;
         }
 
-        /* Results */
         .results {
             display: none;
             flex-direction: column;
@@ -590,11 +557,22 @@
             transition: all 0.3s ease;
         }
 
-        .result-card.threat-high::before { background: var(--danger); }
-        .result-card.threat-med::before { background: var(--accent); }
-        .result-card.threat-low::before { background: var(--success); }
-        .result-card.action::before { background: var(--info); }
+        .result-card.urgency-high::before { background: var(--danger); }
+        .result-card.urgency-med::before { background: var(--accent); }
+        .result-card.urgency-low::before { background: var(--success); }
+        .result-card.retention::before { background: var(--retention); }
         .result-card.reply::before { background: var(--accent); }
+        .result-card.internal::before { background: var(--info); }
+
+        .result-card.retention {
+            border-color: rgba(139, 92, 246, 0.3);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .result-card.retention:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 20px var(--retention-glow);
+        }
 
         .result-label {
             font-size: 0.75rem;
@@ -602,7 +580,7 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-muted);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -614,43 +592,84 @@
             line-height: 1.4;
         }
 
-        .threat-badge {
+        .badge {
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            padding: 0.25rem 0.75rem;
+            padding: 0.35rem 0.75rem;
             border-radius: 100px;
             font-size: 0.875rem;
             font-weight: 800;
         }
 
-        .threat-high {
+        .badge-danger {
             background: rgba(239, 68, 68, 0.1);
             color: var(--danger);
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
-        .confidence {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
             color: var(--success);
-            font-weight: 700;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
-        .confidence-bar {
-            width: 60px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
+        .badge-retention {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--retention);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .retention-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .retention-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .retention-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .retention-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .retention-value.danger { color: var(--danger); }
+        .retention-value.warning { color: var(--accent); }
+        .retention-value.success { color: var(--success); }
+        .retention-value.retention { color: var(--retention); }
+
+        .risk-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
             overflow: hidden;
+            margin-top: 0.5rem;
         }
 
-        .confidence-fill {
+        .risk-fill {
             height: 100%;
-            background: var(--success);
-            border-radius: 2px;
+            border-radius: 3px;
             transition: width 1s ease;
         }
 
@@ -658,7 +677,17 @@
             font-size: 1rem;
             line-height: 1.7;
             color: var(--text);
-            font-style: italic;
+        }
+
+        .internal-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            font-family: 'SF Mono', Monaco, monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
         }
 
         .copy-btn {
@@ -691,7 +720,6 @@
             color: var(--success);
         }
 
-        /* Success Banner */
         .success-banner {
             display: none;
             align-items: center;
@@ -700,7 +728,6 @@
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.2);
             border-radius: 10px;
-            margin-bottom: 1rem;
             font-weight: 700;
             color: var(--success);
             animation: slideIn 0.5s ease;
@@ -721,7 +748,6 @@
             }
         }
 
-        /* Compatibility Strip */
         .compat-strip {
             display: flex;
             align-items: center;
@@ -762,7 +788,6 @@
             color: var(--text);
         }
 
-        /* Usage Counter */
         .usage-counter {
             position: fixed;
             top: 1.5rem;
@@ -788,6 +813,12 @@
             animation: pulse 2s infinite;
         }
 
+        .usage-counter.paid {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
         .usage-dots {
             display: flex;
             gap: 0.35rem;
@@ -811,7 +842,6 @@
             opacity: 0.3;
         }
 
-        /* Paywall Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -984,7 +1014,6 @@
             color: var(--accent);
         }
 
-        /* Footer */
         footer {
             position: relative;
             z-index: 10;
@@ -1002,7 +1031,6 @@
             margin-bottom: 0.5rem;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -1020,7 +1048,6 @@
             background: var(--border-glow);
         }
 
-        /* Responsive */
         @media (max-width: 640px) {
             .usage-counter {
                 top: auto;
@@ -1037,6 +1064,10 @@
             .price {
                 font-size: 2.5rem;
             }
+            
+            .retention-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -1045,60 +1076,55 @@
     <div class="bg-glow"></div>
     <div class="bg-glow-2"></div>
 
-    <!-- Usage Counter -->
     <div class="usage-counter" id="usageCounter">
-        <span>Free defuses</span>
-        <div class="usage-dots">
+        <span id="usageText">Free defuses</span>
+        <div class="usage-dots" id="usageDots">
             <div class="usage-dot active" id="dot1"></div>
             <div class="usage-dot active" id="dot2"></div>
             <div class="usage-dot active" id="dot3"></div>
         </div>
     </div>
 
-    <!-- Navigation -->
     <nav>
         <div class="logo">
             <div class="logo-icon">🛡️</div>
             <span>Defuse</span>
         </div>
-        <div class="nav-badge">Customer Recovery Software</div>
+        <div class="nav-badge">Customer Retention System</div>
     </nav>
 
-    <!-- Hero -->
     <section class="hero">
         <div class="hero-tag">
             <span>⚡</span>
-            <span>The next angry customer doesn't wait</span>
+            <span>Stop churn before it happens</span>
         </div>
         <h1>
-            Your customer just sent a message that could cost you <span>$2,000</span>. Fix it in 8 seconds.
+            Turn angry customer messages into <span>refund-saving replies</span> in 8 seconds
         </h1>
         <p>
-            Built for the message you're dreading opening. We tell you exactly what they're feeling, what they actually want, and what to say so they thank you instead of churning.
+            Paste the message. Get the retention strategy, the exact reply, and what your team should do next. Built for the message you're dreading opening.
         </p>
         <div class="stats-bar">
             <div class="stat">
-                <div class="stat-value">12 min</div>
-                <div class="stat-label">Saved per message</div>
+                <div class="stat-value">Refunds</div>
+                <div class="stat-label">Prevented</div>
             </div>
             <div class="stat">
-                <div class="stat-value">94%</div>
-                <div class="stat-label">Intent match</div>
+                <div class="stat-value">Churn</div>
+                <div class="stat-label">Blocked</div>
             </div>
             <div class="stat">
-                <div class="stat-value">$7</div>
-                <div class="stat-label">Once. Forever.</div>
+                <div class="stat-value">Agents</div>
+                <div class="stat-label">Unstuck</div>
             </div>
         </div>
     </section>
 
-    <!-- App -->
     <div class="app-container">
-        <!-- Input Panel -->
         <div class="panel">
             <div class="panel-header">
                 <div class="panel-icon icon-input">📨</div>
-                <span>Paste the message</span>
+                <span>Paste the customer message</span>
             </div>
             
             <div class="input-wrapper">
@@ -1116,28 +1142,26 @@
                 </div>
             </div>
 
-            <!-- Ghost Preview -->
             <div class="ghost-preview" id="ghostPreview">
                 <div class="ghost-title">
                     <span>✨</span>
-                    <span>In 8 seconds, you'll see:</span>
+                    <span>In 8 seconds, you'll get:</span>
                 </div>
                 <div class="ghost-item">
                     <div class="ghost-dot"></div>
-                    <span>What they're really feeling</span>
+                    <span>Churn risk assessment</span>
                 </div>
                 <div class="ghost-item">
                     <div class="ghost-dot"></div>
-                    <span>The exact move to make</span>
+                    <span>Retention strategy</span>
                 </div>
                 <div class="ghost-item">
                     <div class="ghost-dot"></div>
-                    <span>A reply that sounds like you, but sharper</span>
+                    <span>Ready-to-send reply + internal action</span>
                 </div>
             </div>
         </div>
 
-        <!-- Output Panel -->
         <div class="panel">
             <div class="panel-header">
                 <div class="panel-icon icon-output">⚡</div>
@@ -1145,14 +1169,12 @@
             </div>
 
             <div class="output-content">
-                <!-- Empty State -->
                 <div class="empty-state" id="emptyState">
                     <div class="empty-illustration">🎯</div>
                     <p>Paste a customer message and hit "Defuse this"</p>
-                    <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.6;">We'll analyze tone, intent, and draft your response</p>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.6;">We'll assess churn risk and build your retention strategy</p>
                 </div>
 
-                <!-- Theater -->
                 <div class="theater" id="theater">
                     <div class="theater-spinner"></div>
                     <div class="theater-steps">
@@ -1162,47 +1184,65 @@
                         </div>
                         <div class="theater-step" id="step2">
                             <div class="step-icon">2</div>
-                            <div class="step-text">Calculating best outcome...</div>
+                            <div class="step-text">Calculating churn risk...</div>
                         </div>
                         <div class="theater-step" id="step3">
                             <div class="step-icon">3</div>
-                            <div class="step-text">Drafting your response...</div>
+                            <div class="step-text">Building save strategy...</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Results -->
                 <div class="results" id="results">
                     <div class="success-banner" id="successBanner">
                         <span>✅</span>
-                        <span id="successText">You handled that in 8 seconds</span>
+                        <span id="successText">Retention strategy ready</span>
                     </div>
 
-                    <div class="result-card threat-high" id="threatCard">
+                    <div class="result-card urgency-high" id="urgencyCard">
                         <div class="result-label">
-                            <span>Threat Level</span>
-                            <div class="confidence">
-                                <span>Confidence</span>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
-                                </div>
-                                <span id="confidenceText">94%</span>
-                            </div>
+                            <span>Urgency Assessment</span>
                         </div>
-                        <div class="result-value">
-                            <span class="threat-badge" id="threatBadge">
+                        <div class="result-value" style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                            <span class="badge badge-danger" id="urgencyBadge">
                                 <span>🔴</span>
-                                <span>High — Angry + Escalation Risk</span>
+                                <span>High</span>
                             </span>
+                            <span style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600;" id="riskText">Escalation likely</span>
+                        </div>
+                        <div style="margin-top: 0.75rem; font-size: 0.9rem; color: var(--text-muted);">
+                            <strong style="color: var(--text);">Move:</strong> <span id="moveText">Refund + retention offer</span>
                         </div>
                     </div>
 
-                    <div class="result-card action">
+                    <div class="result-card retention" id="retentionCard">
                         <div class="result-label">
-                            <span>Move</span>
+                            <span>🎯 Retention Strategy</span>
+                            <span class="badge badge-retention" id="priorityBadge">Handle in &lt; 10 min</span>
                         </div>
-                        <div class="result-value" id="actionText">
-                            Appease + Immediate Refund + Senior Follow-up
+                        <div class="retention-grid">
+                            <div class="retention-item">
+                                <div class="retention-label">Churn Risk</div>
+                                <div class="retention-value danger" id="churnRisk">82%</div>
+                                <div class="risk-bar">
+                                    <div class="risk-fill" id="riskFill" style="width: 0%; background: var(--danger);"></div>
+                                </div>
+                            </div>
+                            <div class="retention-item">
+                                <div class="retention-label">Save Probability</div>
+                                <div class="retention-value success" id="saveProb">68%</div>
+                                <div class="risk-bar">
+                                    <div class="risk-fill" id="saveFill" style="width: 0%; background: var(--success);"></div>
+                                </div>
+                            </div>
+                            <div class="retention-item">
+                                <div class="retention-label">Best Action</div>
+                                <div class="retention-value retention" id="bestAction">Refund + credit</div>
+                            </div>
+                            <div class="retention-item">
+                                <div class="retention-label">Value at Risk</div>
+                                <div class="retention-value warning" id="valueAtRisk">$120</div>
+                            </div>
                         </div>
                     </div>
 
@@ -1211,12 +1251,21 @@
                             <span>Send this. Now.</span>
                         </div>
                         <div class="reply-text" id="replyText">
-                            "I completely understand your frustration, and I sincerely apologize for the inconvenience. I've processed a full refund immediately—it should appear in 2-3 business days. I'm also escalating this to our senior team to ensure it never happens again. You'll hear from them within 24 hours."
+                            I'm sorry about that. I've processed your refund and escalated this for immediate review. You'll get confirmation shortly.
                         </div>
                         <button class="copy-btn" id="copyBtn" onclick="handleCopy()">
                             <span>📋</span>
-                            <span id="copyText">Copy to clipboard</span>
+                            <span id="copyText">Copy reply</span>
                         </button>
+                    </div>
+
+                    <div class="result-card internal">
+                        <div class="result-label">
+                            <span>Internal Action</span>
+                        </div>
+                        <div class="internal-text" id="internalText">
+                            Refund now. Escalate to billing. Follow up in 24h.
+                        </div>
                     </div>
 
                     <div class="compat-strip">
@@ -1234,23 +1283,22 @@
         </div>
     </div>
 
-    <!-- Paywall Modal -->
     <div class="modal-overlay" id="paywallModal">
         <div class="modal">
             <button class="modal-close" onclick="closePaywall()">✕</button>
             
             <div class="modal-icon">🔒</div>
-            <h2>You just saved 12 minutes.</h2>
-            <p>The next angry customer doesn't wait. Unlock unlimited recovery plans and never lose another customer to a bad reply.</p>
+            <h2>You just saved a customer.</h2>
+            <p>The next one doesn't wait. Unlock unlimited retention strategies and stop churn before it starts.</p>
             
             <div class="blur-preview">
                 <div class="blur-text">
-                    "I completely understand your frustration, and I sincerely apologize for the inconvenience. I've processed a full refund immediately..."
+                    Churn Risk: 87% | Best Action: Refund + 10% credit | Save Probability: 72%
                 </div>
                 <div class="blur-overlay">
                     <div class="blur-lock">
                         <div class="blur-lock-icon">🔒</div>
-                        <div class="blur-lock-text">Unlock to see full reply</div>
+                        <div class="blur-lock-text">Unlock Retention Strategy</div>
                     </div>
                 </div>
             </div>
@@ -1265,23 +1313,25 @@
             </button>
             
             <div class="pay-sub">
-                Hiring a support writer costs $4,200/mo. This is $7 once.
+                Hiring a retention specialist costs $4,200/mo. This is $7 once.
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
-        <div class="footer-tagline">You're not "doing support." You're preventing churn.</div>
+        <div class="footer-tagline">You are not "doing support." You are preventing churn.</div>
         <p>This is your weapon.</p>
     </footer>
 
     <script>
-        // State
-        let usageCount = 0;
-        const maxFreeUses = 3;
+        // Persistence keys
+        const STORAGE_USAGE = 'defuse_usage';
+        const STORAGE_PAID = 'defuse_paid';
+
+        // Load state from localStorage
+        let usageCount = parseInt(localStorage.getItem(STORAGE_USAGE) || '0');
+        let hasPaid = localStorage.getItem(STORAGE_PAID) === 'true';
         let isProcessing = false;
-        let hasPaid = false;
 
         // DOM Elements
         const messageInput = document.getElementById('messageInput');
@@ -1295,8 +1345,25 @@
         const copyBtn = document.getElementById('copyBtn');
         const paywallModal = document.getElementById('paywallModal');
         const usageCounter = document.getElementById('usageCounter');
+        const usageText = document.getElementById('usageText');
+        const usageDots = document.getElementById('usageDots');
 
-        // Character count
+        // Initialize UI based on persisted state
+        function init() {
+            if (hasPaid) {
+                usageCounter.classList.add('paid');
+                usageText.textContent = 'Unlimited';
+                usageDots.style.display = 'none';
+            } else {
+                updateUsageDots();
+                if (usageCount >= maxFreeUses) {
+                    usageCounter.classList.add('warning');
+                }
+            }
+        }
+
+        const maxFreeUses = 3;
+
         messageInput.addEventListener('input', () => {
             const len = messageInput.value.length;
             charCount.textContent = `${len} character${len !== 1 ? 's' : ''}`;
@@ -1320,7 +1387,6 @@
             const text = messageInput.value.trim();
             if (!text || isProcessing) return;
 
-            // Check if should show paywall (on 4th use, before processing)
             if (usageCount >= maxFreeUses && !hasPaid) {
                 showPaywall();
                 return;
@@ -1330,33 +1396,28 @@
             defuseBtn.disabled = true;
             defuseBtn.innerHTML = '<span>⏳</span><span>Analyzing...</span>';
 
-            // Hide empty state, show theater
             emptyState.classList.add('hidden');
             theater.classList.add('active');
             results.classList.remove('active');
 
-            // Theater animation
             const steps = [
                 document.getElementById('step1'),
                 document.getElementById('step2'),
                 document.getElementById('step3')
             ];
 
-            // Step 1
             steps[0].classList.add('active');
             await sleep(400);
             steps[0].classList.remove('active');
             steps[0].classList.add('done');
             steps[0].querySelector('.step-icon').textContent = '✓';
 
-            // Step 2
             steps[1].classList.add('active');
             await sleep(400);
             steps[1].classList.remove('active');
             steps[1].classList.add('done');
             steps[1].querySelector('.step-icon').textContent = '✓';
 
-            // Step 3
             steps[2].classList.add('active');
             await sleep(400);
             steps[2].classList.remove('active');
@@ -1365,32 +1426,24 @@
 
             await sleep(200);
 
-            // Hide theater, show results
             theater.classList.remove('active');
             results.classList.add('active');
 
-            // Animate confidence bar
-            setTimeout(() => {
-                document.getElementById('confidenceFill').style.width = '94%';
-            }, 100);
-
-            // Generate contextual response based on input
             generateResponse(text);
 
-            // Show success banner
             successBanner.classList.add('active');
 
-            // Increment usage
-            usageCount++;
-            updateUsageDots();
+            if (!hasPaid) {
+                usageCount++;
+                localStorage.setItem(STORAGE_USAGE, usageCount.toString());
+                updateUsageDots();
+            }
 
-            // Reset button
             isProcessing = false;
             defuseBtn.disabled = false;
             defuseBtn.innerHTML = '<span>🛡️</span><span>Defuse this</span>';
 
-            // If this was the last free use, prepare paywall for next time
-            if (usageCount === maxFreeUses) {
+            if (!hasPaid && usageCount === maxFreeUses) {
                 setTimeout(() => {
                     usageCounter.classList.add('warning');
                 }, 1000);
@@ -1399,78 +1452,132 @@
 
         function generateResponse(input) {
             const lower = input.toLowerCase();
-            let threat = 'high';
-            let threatEmoji = '🔴';
-            let threatText = 'High — Angry + Escalation Risk';
-            let action = 'Appease + Immediate Refund + Senior Follow-up';
+            
+            let urgency = 'high';
+            let urgencyClass = 'urgency-high';
+            let badgeClass = 'badge-danger';
+            let badgeEmoji = '🔴';
+            let badgeText = 'High';
+            let riskText = 'Escalation likely';
+            let moveText = 'Refund + retention offer';
+            
+            let churnRisk = 82;
+            let saveProb = 68;
+            let bestAction = 'Refund + 10% credit';
+            let valueAtRisk = '$120';
+            let priority = '< 10 min';
+            let priorityClass = 'badge-retention';
+            
             let reply = '';
+            let internal = '';
 
-            // Simple keyword-based generation for demo
-            if (lower.includes('refund') || lower.includes('money') || lower.includes('charge')) {
-                action = 'Immediate Full Refund + Escalation Prevention';
-                reply = `I completely understand your frustration, and I sincerely apologize for the inconvenience. I've processed a full refund of $[amount] immediately—it should appear in your account within 2-3 business days. 
-
-I'm also personally ensuring this gets reviewed by our senior team so we can prevent this from happening again. You'll receive a follow-up from them within 24 hours with additional details.
-
-Thank you for your patience, and again, I'm truly sorry we let you down.`;
-            } else if (lower.includes('slow') || lower.includes('late') || lower.includes('shipping') || lower.includes('delivery')) {
-                threat = 'med';
-                threatEmoji = '🟠';
-                threatText = 'Medium — Frustrated + Loyalty at Risk';
-                action = 'Acknowledge Delay + Compensation + Expedite';
-                reply = `I sincerely apologize for the delay in your delivery—I know how frustrating it is when you're waiting for something you need.
-
-I've just expedited your shipment with priority tracking and added a $20 credit to your account for the inconvenience. Your new tracking number is [TRACKING], and it should arrive by [DATE].
-
-We value your loyalty, and I'm personally monitoring this to make sure it gets to you on time.`;
-            } else if (lower.includes('bug') || lower.includes('broken') || lower.includes('error') || lower.includes('not working')) {
-                action = 'Acknowledge Issue + Workaround + Fix Timeline';
-                reply = `Thank you for reporting this—I'm sorry you're experiencing this issue. Our team has identified this bug and is actively working on a fix scheduled for release by [DATE].
-
-In the meantime, here's a quick workaround that should resolve it immediately: [WORKAROUND].
-
-I've also added 2 free months to your subscription for the trouble. I'll personally notify you the moment the fix is live.`;
-            } else if (lower.includes('cancel') || lower.includes('unsubscribe') || lower.includes('close account')) {
-                threat = 'high';
-                threatEmoji = '🔴';
-                threatText = 'Critical — Churn Imminent';
-                action = 'Retention Offer + Personal Call + Win-back';
-                reply = `I'm really sorry to hear you're considering leaving us. Before you go, I'd love the chance to make this right.
-
-I've applied a 50% discount to your next 3 months and scheduled a quick 10-minute call with our customer success lead for tomorrow. No pressure—just want to understand what went wrong and see if we can fix it.
-
-If after the call you still want to cancel, I'll process it immediately with no questions asked. Would [TIME] work for you?`;
+            if (lower.includes('refund') || lower.includes('money') || lower.includes('charge') || lower.includes('paid')) {
+                churnRisk = 87;
+                saveProb = 65;
+                bestAction = 'Full refund + 10% credit';
+                valueAtRisk = '$' + (Math.floor(Math.random() * 100) + 80);
+                reply = `I'm sorry about that. I've processed your full refund—it should appear in 2-3 business days. I've also added a credit to your account for the trouble. You'll get confirmation shortly.`;
+                internal = `Process full refund immediately. Add 10% account credit. Flag account for retention monitoring. Follow up in 48h.`;
+            } else if (lower.includes('slow') || lower.includes('late') || lower.includes('shipping') || lower.includes('delivery') || lower.includes('arrived')) {
+                urgency = 'med';
+                urgencyClass = 'urgency-med';
+                badgeClass = 'badge-warning';
+                badgeEmoji = '🟠';
+                badgeText = 'Medium';
+                riskText = 'Loyalty at risk';
+                moveText = 'Expedite + compensate';
+                churnRisk = 64;
+                saveProb = 78;
+                bestAction = 'Expedite shipping + $20 credit';
+                valueAtRisk = '$85';
+                priority = '< 30 min';
+                reply = `I'm sorry for the delay. I've expedited your shipment with priority tracking and added a $20 credit for the inconvenience. Your new tracking number is on the way.`;
+                internal = `Expedite shipment. Apply $20 credit. Send priority tracking. Monitor delivery personally.`;
+            } else if (lower.includes('bug') || lower.includes('broken') || lower.includes('error') || lower.includes('not working') || lower.includes('issue')) {
+                urgency = 'med';
+                urgencyClass = 'urgency-med';
+                badgeClass = 'badge-warning';
+                badgeEmoji = '🟠';
+                badgeText = 'Medium';
+                riskText = 'Frustration building';
+                moveText = 'Fix timeline + workaround';
+                churnRisk = 71;
+                saveProb = 72;
+                bestAction = 'Workaround + 2 months free';
+                valueAtRisk = '$60';
+                priority = '< 2 hours';
+                reply = `Thanks for reporting this. Our team is actively fixing it—target release is [DATE]. Here's a workaround that should resolve it now: [LINK]. I've also added 2 free months to your account.`;
+                internal = `Log bug with engineering. Provide workaround immediately. Apply 2-month extension. Notify when fix is live.`;
+            } else if (lower.includes('cancel') || lower.includes('unsubscribe') || lower.includes('close account') || lower.includes('leaving')) {
+                churnRisk = 94;
+                saveProb = 45;
+                bestAction = 'Retention call + 50% discount';
+                valueAtRisk = '$240';
+                priority = '< 10 min';
+                reply = `I'm really sorry to hear this. Before you go, I'd love a chance to make this right. I've applied 50% off your next 3 months and scheduled a quick call with our team lead—no pressure, just want to understand what went wrong.`;
+                internal = `CRITICAL: Assign to retention specialist immediately. Apply 50% discount. Schedule call within 24h. Do NOT process cancellation without manager approval.`;
             } else {
-                threat = 'med';
-                threatEmoji = '🟠';
-                threatText = 'Medium — Dissatisfied + Needs Validation';
-                action = 'Validate Concern + Specific Solution + Follow-up';
-                reply = `Thank you for reaching out, and I completely understand why this would be concerning. Your experience matters deeply to us, and I want to make sure we get this resolved properly.
-
-Here's exactly what I'm going to do: [SPECIFIC ACTION]. I expect this to be fully resolved by [TIMEFRAME], and I'll personally check in with you then to confirm everything is working as expected.
-
-If there's anything else I can do in the meantime, please don't hesitate to let me know.`;
+                urgency = 'med';
+                urgencyClass = 'urgency-med';
+                badgeClass = 'badge-warning';
+                badgeEmoji = '🟠';
+                badgeText = 'Medium';
+                riskText = 'Dissatisfied + needs validation';
+                moveText = 'Validate + specific fix';
+                churnRisk = 58;
+                saveProb = 81;
+                bestAction = 'Personal follow-up + resolution';
+                valueAtRisk = '$95';
+                priority = '< 2 hours';
+                reply = `I completely understand your concern, and I'm sorry we missed the mark. Here's exactly what I'm doing to fix this: [SPECIFIC ACTION]. I'll personally check in with you by [TIME] to confirm everything is resolved.`;
+                internal = `Acknowledge specific issue. Apply fix. Set personal follow-up reminder. Escalate if unresolved in 24h.`;
             }
 
-            // Update UI
-            const threatCard = document.getElementById('threatCard');
-            threatCard.className = `result-card threat-${threat}`;
-            document.getElementById('threatBadge').innerHTML = `<span>${threatEmoji}</span><span>${threatText}</span>`;
-            document.getElementById('actionText').textContent = action;
+            // Update urgency card
+            const urgencyCard = document.getElementById('urgencyCard');
+            urgencyCard.className = `result-card ${urgencyClass}`;
+            document.getElementById('urgencyBadge').className = `badge ${badgeClass}`;
+            document.getElementById('urgencyBadge').innerHTML = `<span>${badgeEmoji}</span><span>${badgeText}</span>`;
+            document.getElementById('riskText').textContent = riskText;
+            document.getElementById('moveText').textContent = moveText;
+
+            // Update retention card
+            document.getElementById('priorityBadge').textContent = `Handle in ${priority}`;
+            document.getElementById('churnRisk').textContent = churnRisk + '%';
+            document.getElementById('saveProb').textContent = saveProb + '%';
+            document.getElementById('bestAction').textContent = bestAction;
+            document.getElementById('valueAtRisk').textContent = valueAtRisk;
+
+            // Animate bars
+            setTimeout(() => {
+                document.getElementById('riskFill').style.width = churnRisk + '%';
+                document.getElementById('saveFill').style.width = saveProb + '%';
+            }, 100);
+
+            // Update reply and internal
             document.getElementById('replyText').textContent = reply;
-            
-            // Randomize confidence slightly for realism
-            const conf = 92 + Math.floor(Math.random() * 5);
-            document.getElementById('confidenceText').textContent = conf + '%';
+            document.getElementById('internalText').textContent = internal;
         }
 
         function updateUsageDots() {
+            if (hasPaid) return;
+            
             for (let i = 1; i <= 3; i++) {
                 const dot = document.getElementById(`dot${i}`);
                 if (i <= usageCount) {
                     dot.classList.remove('active');
                     dot.classList.add('used');
+                } else {
+                    dot.classList.add('active');
+                    dot.classList.remove('used');
                 }
+            }
+
+            if (usageCount >= maxFreeUses) {
+                usageText.textContent = 'No free defuses left';
+                usageCounter.classList.add('warning');
+            } else {
+                usageText.textContent = `${maxFreeUses - usageCount} free left`;
             }
         }
 
@@ -1484,10 +1591,9 @@ If there's anything else I can do in the meantime, please don't hesitate to let 
                 
                 setTimeout(() => {
                     copyBtn.classList.remove('copied');
-                    copyBtn.innerHTML = '<span>📋</span><span>Copy to clipboard</span>';
+                    copyBtn.innerHTML = '<span>📋</span><span>Copy reply</span>';
                 }, 2500);
             } catch (err) {
-                // Fallback
                 const ta = document.createElement('textarea');
                 ta.value = reply;
                 document.body.appendChild(ta);
@@ -1500,7 +1606,7 @@ If there's anything else I can do in the meantime, please don't hesitate to let 
                 
                 setTimeout(() => {
                     copyBtn.classList.remove('copied');
-                    copyBtn.innerHTML = '<span>📋</span><span>Copy to clipboard</span>';
+                    copyBtn.innerHTML = '<span>📋</span><span>Copy reply</span>';
                 }, 2500);
             }
         }
@@ -1516,17 +1622,21 @@ If there's anything else I can do in the meantime, please don't hesitate to let 
         }
 
         function handlePayment() {
-            // Simulate payment
             const btn = document.querySelector('.pay-btn');
             btn.textContent = 'Processing...';
             btn.disabled = true;
             
             setTimeout(() => {
                 hasPaid = true;
-                closePaywall();
-                usageCounter.style.display = 'none';
+                localStorage.setItem(STORAGE_PAID, 'true');
                 
-                // Re-trigger the defuse if they had text waiting
+                usageCounter.classList.remove('warning');
+                usageCounter.classList.add('paid');
+                usageText.textContent = 'Unlimited';
+                usageDots.style.display = 'none';
+                
+                closePaywall();
+                
                 if (messageInput.value.trim()) {
                     handleDefuse();
                 }
@@ -1537,19 +1647,20 @@ If there's anything else I can do in the meantime, please don't hesitate to let 
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // Close modal on overlay click
         paywallModal.addEventListener('click', (e) => {
             if (e.target === paywallModal) {
                 closePaywall();
             }
         });
 
-        // Enter key to submit
         messageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.metaKey) {
                 handleDefuse();
             }
         });
+
+        // Initialize on load
+        init();
     </script>
 </body>
 </html>
