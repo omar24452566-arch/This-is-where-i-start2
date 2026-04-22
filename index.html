@@ -26,6 +26,7 @@
             --info: #3b82f6;
             --retention: #8b5cf6;
             --retention-glow: rgba(139, 92, 246, 0.3);
+            --professional: #06b6d4;
         }
 
         body {
@@ -80,10 +81,40 @@
             50% { transform: translate(30px, -30px); }
         }
 
+        /* Trust Bar */
+        .trust-bar {
+            position: relative;
+            z-index: 10;
+            background: rgba(16, 185, 129, 0.08);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+            padding: 0.6rem 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--success);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .trust-bar .pulse-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
         nav {
             position: relative;
             z-index: 10;
-            padding: 1.5rem 2rem;
+            padding: 1.25rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -115,7 +146,7 @@
 
         .nav-badge {
             font-size: 0.75rem;
-            padding: 0.25rem 0.75rem;
+            padding: 0.35rem 0.9rem;
             background: rgba(245, 158, 11, 0.1);
             border: 1px solid rgba(245, 158, 11, 0.2);
             border-radius: 100px;
@@ -127,7 +158,7 @@
             position: relative;
             z-index: 10;
             text-align: center;
-            padding: 4rem 2rem 2rem;
+            padding: 3.5rem 2rem 2rem;
             max-width: 800px;
             margin: 0 auto;
         }
@@ -151,7 +182,7 @@
             font-weight: 900;
             line-height: 1.1;
             letter-spacing: -0.03em;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             background: linear-gradient(135deg, #fff 0%, #a5a5b5 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -164,33 +195,50 @@
         }
 
         .hero p {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             color: var(--text-muted);
             max-width: 600px;
             margin: 0 auto 2rem;
+            line-height: 1.5;
         }
 
         .stats-bar {
             display: flex;
             justify-content: center;
-            gap: 2rem;
+            gap: 2.5rem;
             margin-top: 2rem;
             flex-wrap: wrap;
         }
 
         .stat {
             text-align: center;
+            position: relative;
+        }
+
+        .stat:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 30px;
+            background: var(--border);
         }
 
         .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 800;
             color: var(--accent);
+            letter-spacing: -0.02em;
         }
 
         .stat-label {
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .app-container {
@@ -208,6 +256,7 @@
             .app-container {
                 grid-template-columns: 1fr;
             }
+            .stat:not(:last-child)::after { display: none; }
         }
 
         .panel {
@@ -247,6 +296,55 @@
         .icon-input { background: rgba(59, 130, 246, 0.1); color: var(--info); }
         .icon-output { background: rgba(245, 158, 11, 0.1); color: var(--accent); }
 
+        /* Tone Toggle */
+        .tone-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .tone-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 0.5rem;
+        }
+
+        .tone-options {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .tone-btn {
+            padding: 0.4rem 0.9rem;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tone-btn.active {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .tone-btn:hover:not(.active) {
+            color: var(--text);
+        }
+
         .input-wrapper {
             position: relative;
         }
@@ -274,6 +372,27 @@
 
         textarea::placeholder {
             color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .example-rotate {
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            user-select: none;
+        }
+
+        .example-rotate:hover {
+            color: var(--accent);
+        }
+
+        .example-rotate span {
+            opacity: 0.7;
         }
 
         .input-footer {
@@ -586,6 +705,15 @@
             justify-content: space-between;
         }
 
+        .ai-estimate {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            opacity: 0.6;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
         .result-value {
             font-size: 1.1rem;
             font-weight: 700;
@@ -866,7 +994,7 @@
             border: 1px solid var(--border);
             border-radius: 24px;
             padding: 3rem;
-            max-width: 500px;
+            max-width: 520px;
             width: 100%;
             position: relative;
             transform: scale(0.95);
@@ -900,6 +1028,20 @@
             color: var(--text);
         }
 
+        .modal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.9rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 100px;
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+
         .modal-icon {
             width: 64px;
             height: 64px;
@@ -922,16 +1064,38 @@
 
         .modal p {
             color: var(--text-muted);
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
             line-height: 1.6;
+        }
+
+        .scarcity-box {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .scarcity-box .icon {
+            font-size: 1.25rem;
+        }
+
+        .scarcity-box .text {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--danger);
         }
 
         .price-tag {
             display: flex;
             align-items: baseline;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .price {
@@ -939,6 +1103,13 @@
             font-weight: 900;
             color: var(--accent);
             line-height: 1;
+        }
+
+        .price-strike {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            text-decoration: line-through;
+            opacity: 0.6;
         }
 
         .price-detail {
@@ -1068,6 +1239,11 @@
             .retention-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .trust-bar {
+                font-size: 0.75rem;
+                padding: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -1075,6 +1251,11 @@
     <div class="bg-grid"></div>
     <div class="bg-glow"></div>
     <div class="bg-glow-2"></div>
+
+    <div class="trust-bar">
+        <div class="pulse-dot"></div>
+        <span>Used by 12 small businesses this week</span>
+    </div>
 
     <div class="usage-counter" id="usageCounter">
         <span id="usageText">Free defuses</span>
@@ -1126,12 +1307,25 @@
                 <div class="panel-icon icon-input">📨</div>
                 <span>Paste the customer message</span>
             </div>
+
+            <div class="tone-toggle">
+                <span class="tone-label">Tone</span>
+                <div class="tone-options">
+                    <button class="tone-btn active" id="toneCasual" onclick="setTone('casual')">Casual</button>
+                    <button class="tone-btn" id="toneProfessional" onclick="setTone('professional')">Professional</button>
+                </div>
+            </div>
             
             <div class="input-wrapper">
                 <textarea 
                     id="messageInput" 
-                    placeholder="Paste the angry customer message here..."
+                    placeholder="I was charged twice for my order and still haven't received a shipping confirmation. This is unacceptable..."
                 ></textarea>
+                
+                <div class="example-rotate" onclick="rotateExample()">
+                    <span>💡</span>
+                    <span id="exampleText">Try an example: refund request</span>
+                </div>
                 
                 <div class="input-footer">
                     <span class="char-count" id="charCount">0 characters</span>
@@ -1222,14 +1416,14 @@
                         </div>
                         <div class="retention-grid">
                             <div class="retention-item">
-                                <div class="retention-label">Churn Risk</div>
+                                <div class="retention-label">Churn Risk <span class="ai-estimate">(AI estimate)</span></div>
                                 <div class="retention-value danger" id="churnRisk">82%</div>
                                 <div class="risk-bar">
                                     <div class="risk-fill" id="riskFill" style="width: 0%; background: var(--danger);"></div>
                                 </div>
                             </div>
                             <div class="retention-item">
-                                <div class="retention-label">Save Probability</div>
+                                <div class="retention-label">Save Probability <span class="ai-estimate">(AI estimate)</span></div>
                                 <div class="retention-value success" id="saveProb">68%</div>
                                 <div class="risk-bar">
                                     <div class="risk-fill" id="saveFill" style="width: 0%; background: var(--success);"></div>
@@ -1249,6 +1443,7 @@
                     <div class="result-card reply">
                         <div class="result-label">
                             <span>Send this. Now.</span>
+                            <span class="ai-estimate" id="toneLabel">Casual tone</span>
                         </div>
                         <div class="reply-text" id="replyText">
                             I'm sorry about that. I've processed your refund and escalated this for immediate review. You'll get confirmation shortly.
@@ -1287,9 +1482,15 @@
         <div class="modal">
             <button class="modal-close" onclick="closePaywall()">✕</button>
             
+            <div class="modal-badge">🔥 Founding Users Only</div>
             <div class="modal-icon">🔒</div>
             <h2>You just saved a customer.</h2>
             <p>The next one doesn't wait. Unlock unlimited retention strategies and stop churn before it starts.</p>
+            
+            <div class="scarcity-box">
+                <span class="icon">⏰</span>
+                <span class="text">Only 50 lifetime slots at $7 — Price goes to $19 soon</span>
+            </div>
             
             <div class="blur-preview">
                 <div class="blur-text">
@@ -1305,11 +1506,12 @@
 
             <div class="price-tag">
                 <span class="price">$7</span>
-                <span class="price-detail">Unlimited. Forever.</span>
+                <span class="price-strike">$19</span>
+                <span class="price-detail">One-time. Forever.</span>
             </div>
 
             <button class="pay-btn" onclick="handlePayment()">
-                Unlock Defuse — $7 One-Time
+                Unlock Defuse — $7 Early Access
             </button>
             
             <div class="pay-sub">
@@ -1324,16 +1526,25 @@
     </footer>
 
     <script>
-        // Persistence keys
-        const STORAGE_USAGE = 'defuse_usage';
-        const STORAGE_PAID = 'defuse_paid';
+        const STORAGE_USAGE = 'defuse_usage_v2';
+        const STORAGE_PAID = 'defuse_paid_v2';
+        const STORAGE_TONE = 'defuse_tone';
 
-        // Load state from localStorage
         let usageCount = parseInt(localStorage.getItem(STORAGE_USAGE) || '0');
         let hasPaid = localStorage.getItem(STORAGE_PAID) === 'true';
+        let currentTone = localStorage.getItem(STORAGE_TONE) || 'casual';
         let isProcessing = false;
 
-        // DOM Elements
+        const maxFreeUses = 3;
+
+        const examples = [
+            { text: "I was charged twice for my order and still haven't received a shipping confirmation. This is unacceptable...", label: "refund request" },
+            { text: "My package was supposed to arrive 5 days ago. I've contacted support twice with no response. I need this resolved today or I'm disputing the charge.", label: "delayed shipping" },
+            { text: "Your app keeps crashing every time I try to export my report. I've lost 3 hours of work. This is costing me money.", label: "angry email" },
+            { text: "I want to cancel my subscription immediately. Your product doesn't do what was promised and your support has been unhelpful.", label: "cancellation threat" }
+        ];
+        let exampleIndex = 0;
+
         const messageInput = document.getElementById('messageInput');
         const charCount = document.getElementById('charCount');
         const defuseBtn = document.getElementById('defuseBtn');
@@ -1348,8 +1559,8 @@
         const usageText = document.getElementById('usageText');
         const usageDots = document.getElementById('usageDots');
 
-        // Initialize UI based on persisted state
         function init() {
+            setTone(currentTone, false);
             if (hasPaid) {
                 usageCounter.classList.add('paid');
                 usageText.textContent = 'Unlimited';
@@ -1362,7 +1573,23 @@
             }
         }
 
-        const maxFreeUses = 3;
+        function setTone(tone, persist = true) {
+            currentTone = tone;
+            if (persist) localStorage.setItem(STORAGE_TONE, tone);
+            
+            document.getElementById('toneCasual').classList.toggle('active', tone === 'casual');
+            document.getElementById('toneProfessional').classList.toggle('active', tone === 'professional');
+            
+            const label = document.getElementById('toneLabel');
+            if (label) label.textContent = tone === 'casual' ? 'Casual tone' : 'Professional tone';
+        }
+
+        function rotateExample() {
+            exampleIndex = (exampleIndex + 1) % examples.length;
+            const ex = examples[exampleIndex];
+            messageInput.placeholder = ex.text;
+            document.getElementById('exampleText').textContent = `Try an example: ${ex.label}`;
+        }
 
         messageInput.addEventListener('input', () => {
             const len = messageInput.value.length;
@@ -1466,19 +1693,20 @@
             let bestAction = 'Refund + 10% credit';
             let valueAtRisk = '$120';
             let priority = '< 10 min';
-            let priorityClass = 'badge-retention';
             
-            let reply = '';
+            let replyCasual = '';
+            let replyProfessional = '';
             let internal = '';
 
-            if (lower.includes('refund') || lower.includes('money') || lower.includes('charge') || lower.includes('paid')) {
+            if (lower.includes('refund') || lower.includes('money') || lower.includes('charge') || lower.includes('paid') || lower.includes('twice')) {
                 churnRisk = 87;
                 saveProb = 65;
                 bestAction = 'Full refund + 10% credit';
                 valueAtRisk = '$' + (Math.floor(Math.random() * 100) + 80);
-                reply = `I'm sorry about that. I've processed your full refund—it should appear in 2-3 business days. I've also added a credit to your account for the trouble. You'll get confirmation shortly.`;
+                replyCasual = `Hey, I'm really sorry about that. I've processed your full refund—it should show up in 2-3 business days. I also added a credit to your account for the trouble. You'll get an email confirmation shortly.`;
+                replyProfessional = `We sincerely apologize for the billing error. We have processed a full refund, which will appear within 2-3 business days. Additionally, we have applied an account credit as a gesture of goodwill. You will receive a confirmation email shortly.`;
                 internal = `Process full refund immediately. Add 10% account credit. Flag account for retention monitoring. Follow up in 48h.`;
-            } else if (lower.includes('slow') || lower.includes('late') || lower.includes('shipping') || lower.includes('delivery') || lower.includes('arrived')) {
+            } else if (lower.includes('slow') || lower.includes('late') || lower.includes('shipping') || lower.includes('delivery') || lower.includes('arrived') || lower.includes('package')) {
                 urgency = 'med';
                 urgencyClass = 'urgency-med';
                 badgeClass = 'badge-warning';
@@ -1491,9 +1719,10 @@
                 bestAction = 'Expedite shipping + $20 credit';
                 valueAtRisk = '$85';
                 priority = '< 30 min';
-                reply = `I'm sorry for the delay. I've expedited your shipment with priority tracking and added a $20 credit for the inconvenience. Your new tracking number is on the way.`;
+                replyCasual = `Hey, I'm sorry for the delay. I've expedited your shipment with priority tracking and added a $20 credit for the inconvenience. Your new tracking number is on the way.`;
+                replyProfessional = `We sincerely apologize for the delay in your shipment. We have upgraded your order to priority shipping and applied a $20 account credit. Your updated tracking information will be sent to you shortly.`;
                 internal = `Expedite shipment. Apply $20 credit. Send priority tracking. Monitor delivery personally.`;
-            } else if (lower.includes('bug') || lower.includes('broken') || lower.includes('error') || lower.includes('not working') || lower.includes('issue')) {
+            } else if (lower.includes('bug') || lower.includes('broken') || lower.includes('error') || lower.includes('not working') || lower.includes('issue') || lower.includes('crashing')) {
                 urgency = 'med';
                 urgencyClass = 'urgency-med';
                 badgeClass = 'badge-warning';
@@ -1506,7 +1735,8 @@
                 bestAction = 'Workaround + 2 months free';
                 valueAtRisk = '$60';
                 priority = '< 2 hours';
-                reply = `Thanks for reporting this. Our team is actively fixing it—target release is [DATE]. Here's a workaround that should resolve it now: [LINK]. I've also added 2 free months to your account.`;
+                replyCasual = `Thanks for reporting this. Our team is actively fixing it—target release is [DATE]. Here's a workaround that should resolve it now: [LINK]. I've also added 2 free months to your account.`;
+                replyProfessional = `Thank you for bringing this to our attention. Our engineering team is actively resolving this issue, with a targeted fix scheduled for [DATE]. In the meantime, please use this workaround: [LINK]. We have also extended your subscription by two months at no charge.`;
                 internal = `Log bug with engineering. Provide workaround immediately. Apply 2-month extension. Notify when fix is live.`;
             } else if (lower.includes('cancel') || lower.includes('unsubscribe') || lower.includes('close account') || lower.includes('leaving')) {
                 churnRisk = 94;
@@ -1514,7 +1744,8 @@
                 bestAction = 'Retention call + 50% discount';
                 valueAtRisk = '$240';
                 priority = '< 10 min';
-                reply = `I'm really sorry to hear this. Before you go, I'd love a chance to make this right. I've applied 50% off your next 3 months and scheduled a quick call with our team lead—no pressure, just want to understand what went wrong.`;
+                replyCasual = `I'm really sorry to hear this. Before you go, I'd love a chance to make this right. I've applied 50% off your next 3 months and scheduled a quick call with our team lead—no pressure, just want to understand what went wrong.`;
+                replyProfessional = `We are truly sorry to hear that you are considering leaving us. Before proceeding, we would welcome the opportunity to address your concerns. We have applied a 50% discount to your next three billing cycles and would like to schedule a brief call with our customer success lead at your earliest convenience.`;
                 internal = `CRITICAL: Assign to retention specialist immediately. Apply 50% discount. Schedule call within 24h. Do NOT process cancellation without manager approval.`;
             } else {
                 urgency = 'med';
@@ -1529,11 +1760,11 @@
                 bestAction = 'Personal follow-up + resolution';
                 valueAtRisk = '$95';
                 priority = '< 2 hours';
-                reply = `I completely understand your concern, and I'm sorry we missed the mark. Here's exactly what I'm doing to fix this: [SPECIFIC ACTION]. I'll personally check in with you by [TIME] to confirm everything is resolved.`;
+                replyCasual = `I completely understand your concern, and I'm sorry we missed the mark. Here's exactly what I'm doing to fix this: [SPECIFIC ACTION]. I'll personally check in with you by [TIME] to confirm everything is resolved.`;
+                replyProfessional = `We fully understand your concern and sincerely apologize that we did not meet your expectations. We are taking the following corrective action: [SPECIFIC ACTION]. I will personally follow up with you by [TIME] to ensure the matter is fully resolved.`;
                 internal = `Acknowledge specific issue. Apply fix. Set personal follow-up reminder. Escalate if unresolved in 24h.`;
             }
 
-            // Update urgency card
             const urgencyCard = document.getElementById('urgencyCard');
             urgencyCard.className = `result-card ${urgencyClass}`;
             document.getElementById('urgencyBadge').className = `badge ${badgeClass}`;
@@ -1541,21 +1772,18 @@
             document.getElementById('riskText').textContent = riskText;
             document.getElementById('moveText').textContent = moveText;
 
-            // Update retention card
             document.getElementById('priorityBadge').textContent = `Handle in ${priority}`;
             document.getElementById('churnRisk').textContent = churnRisk + '%';
             document.getElementById('saveProb').textContent = saveProb + '%';
             document.getElementById('bestAction').textContent = bestAction;
             document.getElementById('valueAtRisk').textContent = valueAtRisk;
 
-            // Animate bars
             setTimeout(() => {
                 document.getElementById('riskFill').style.width = churnRisk + '%';
                 document.getElementById('saveFill').style.width = saveProb + '%';
             }, 100);
 
-            // Update reply and internal
-            document.getElementById('replyText').textContent = reply;
+            document.getElementById('replyText').textContent = currentTone === 'casual' ? replyCasual : replyProfessional;
             document.getElementById('internalText').textContent = internal;
         }
 
@@ -1659,7 +1887,6 @@
             }
         });
 
-        // Initialize on load
         init();
     </script>
 </body>
