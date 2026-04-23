@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Defuse — Turn Angry Messages Into Saved Customers</title>
+    <title>Defuse — See the Reply That Saves Them</title>
     <style>
         * {
             margin: 0;
@@ -26,7 +26,7 @@
             --info: #3b82f6;
             --retention: #8b5cf6;
             --retention-glow: rgba(139, 92, 246, 0.3);
-            --professional: #06b6d4;
+            --before: #dc2626;
         }
 
         body {
@@ -81,34 +81,21 @@
             50% { transform: translate(30px, -30px); }
         }
 
-        /* Trust Bar */
-        .trust-bar {
+        /* Credibility Bar */
+        .cred-bar {
             position: relative;
             z-index: 10;
-            background: rgba(16, 185, 129, 0.08);
-            border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+            background: rgba(10, 10, 15, 0.9);
+            border-bottom: 1px solid var(--border);
             padding: 0.6rem 1rem;
             text-align: center;
             font-size: 0.85rem;
-            color: var(--success);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            color: var(--text-muted);
         }
 
-        .trust-bar .pulse-dot {
-            width: 6px;
-            height: 6px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse-dot 2s infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
+        .cred-bar strong {
+            color: var(--text);
+            font-weight: 700;
         }
 
         nav {
@@ -158,7 +145,7 @@
             position: relative;
             z-index: 10;
             text-align: center;
-            padding: 3.5rem 2rem 2rem;
+            padding: 3rem 2rem 2rem;
             max-width: 800px;
             margin: 0 auto;
         }
@@ -296,52 +283,50 @@
         .icon-input { background: rgba(59, 130, 246, 0.1); color: var(--info); }
         .icon-output { background: rgba(245, 158, 11, 0.1); color: var(--accent); }
 
-        /* Tone Toggle */
-        .tone-toggle {
+        .authority-toggle {
             display: flex;
-            align-items: center;
-            gap: 0.75rem;
+            flex-direction: column;
+            gap: 0.5rem;
             margin-bottom: 1rem;
-            padding: 0.5rem;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            width: fit-content;
         }
 
-        .tone-label {
+        .authority-label {
             font-size: 0.8rem;
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            padding: 0 0.5rem;
         }
 
-        .tone-options {
+        .authority-options {
             display: flex;
-            gap: 0.25rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
-        .tone-btn {
-            padding: 0.4rem 0.9rem;
-            border-radius: 6px;
-            border: 1px solid transparent;
-            background: transparent;
+        .authority-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
             color: var(--text-muted);
             font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
-        .tone-btn.active {
-            background: rgba(245, 158, 11, 0.15);
+        .authority-btn.active {
+            background: rgba(245, 158, 11, 0.1);
             color: var(--accent);
-            border-color: rgba(245, 158, 11, 0.3);
+            border-color: var(--accent);
         }
 
-        .tone-btn:hover:not(.active) {
+        .authority-btn:hover:not(.active) {
+            border-color: var(--border-glow);
             color: var(--text);
         }
 
@@ -389,10 +374,6 @@
 
         .example-rotate:hover {
             color: var(--accent);
-        }
-
-        .example-rotate span {
-            opacity: 0.7;
         }
 
         .input-footer {
@@ -650,6 +631,97 @@
             }
         }
 
+        /* Pain Trigger */
+        .pain-trigger {
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            border-radius: 10px;
+            padding: 0.875rem 1rem;
+            font-size: 0.9rem;
+            color: #fca5a5;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* BEFORE / AFTER */
+        .compare-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .compare-card:hover {
+            border-color: var(--border-glow);
+        }
+
+        .compare-header {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .compare-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .compare-tab.before-tab {
+            color: var(--before);
+            border-bottom-color: var(--before);
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .compare-tab.after-tab {
+            color: var(--success);
+            border-bottom-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .compare-tab.inactive {
+            opacity: 0.4;
+            background: transparent;
+            border-bottom-color: transparent;
+        }
+
+        .compare-body {
+            padding: 1.25rem;
+        }
+
+        .compare-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .compare-text.before-text {
+            color: #fca5a5;
+        }
+
+        .compare-text.after-text {
+            color: var(--text);
+        }
+
+        .compare-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         .result-card {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border);
@@ -705,15 +777,6 @@
             justify-content: space-between;
         }
 
-        .ai-estimate {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            opacity: 0.6;
-            font-weight: 500;
-            text-transform: none;
-            letter-spacing: 0;
-        }
-
         .result-value {
             font-size: 1.1rem;
             font-weight: 700;
@@ -756,8 +819,8 @@
 
         .retention-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            grid-template-columns: 1fr;
+            gap: 0.875rem;
             margin-top: 0.5rem;
         }
 
@@ -765,6 +828,9 @@
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
         }
 
         .retention-label {
@@ -776,30 +842,16 @@
         }
 
         .retention-value {
-            font-size: 1.1rem;
-            font-weight: 800;
+            font-size: 1rem;
+            font-weight: 700;
             color: var(--text);
+            line-height: 1.4;
         }
 
         .retention-value.danger { color: var(--danger); }
         .retention-value.warning { color: var(--accent); }
         .retention-value.success { color: var(--success); }
         .retention-value.retention { color: var(--retention); }
-
-        .risk-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 0.5rem;
-        }
-
-        .risk-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 1s ease;
-        }
 
         .reply-text {
             font-size: 1rem;
@@ -970,6 +1022,45 @@
             opacity: 0.3;
         }
 
+        /* Blur overlay for free users */
+        .blur-overlay-card {
+            position: relative;
+        }
+
+        .blur-content {
+            filter: blur(4px);
+            opacity: 0.4;
+            user-select: none;
+        }
+
+        .blur-unlock {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 10, 15, 0.6);
+            border-radius: 12px;
+            z-index: 5;
+            gap: 0.5rem;
+        }
+
+        .blur-unlock-icon {
+            font-size: 1.5rem;
+        }
+
+        .blur-unlock-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .blur-unlock-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1069,27 +1160,6 @@
             line-height: 1.6;
         }
 
-        .scarcity-box {
-            background: rgba(239, 68, 68, 0.08);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .scarcity-box .icon {
-            font-size: 1.25rem;
-        }
-
-        .scarcity-box .text {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--danger);
-        }
-
         .price-tag {
             display: flex;
             align-items: baseline;
@@ -1103,13 +1173,6 @@
             font-weight: 900;
             color: var(--accent);
             line-height: 1;
-        }
-
-        .price-strike {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            text-decoration: line-through;
-            opacity: 0.6;
         }
 
         .price-detail {
@@ -1141,48 +1204,6 @@
             text-align: center;
             font-size: 0.875rem;
             color: var(--text-muted);
-        }
-
-        .blur-preview {
-            position: relative;
-            margin: 1.5rem 0;
-            padding: 1.5rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .blur-text {
-            filter: blur(4px);
-            opacity: 0.5;
-            user-select: none;
-            font-style: italic;
-            line-height: 1.6;
-        }
-
-        .blur-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(10, 10, 15, 0.4);
-            border-radius: 12px;
-        }
-
-        .blur-lock {
-            text-align: center;
-        }
-
-        .blur-lock-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .blur-lock-text {
-            font-size: 0.875rem;
-            font-weight: 700;
-            color: var(--accent);
         }
 
         footer {
@@ -1235,15 +1256,6 @@
             .price {
                 font-size: 2.5rem;
             }
-            
-            .retention-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .trust-bar {
-                font-size: 0.75rem;
-                padding: 0.5rem;
-            }
         }
     </style>
 </head>
@@ -1252,9 +1264,8 @@
     <div class="bg-glow"></div>
     <div class="bg-glow-2"></div>
 
-    <div class="trust-bar">
-        <div class="pulse-dot"></div>
-        <span>Used by 12 small businesses this week</span>
+    <div class="cred-bar">
+        Built for <strong>support agents</strong> handling refunds at small Shopify stores and SaaS startups
     </div>
 
     <div class="usage-counter" id="usageCounter">
@@ -1277,13 +1288,13 @@
     <section class="hero">
         <div class="hero-tag">
             <span>⚡</span>
-            <span>Stop churn before it happens</span>
+            <span>See the reply that saves them</span>
         </div>
         <h1>
             Turn angry customer messages into <span>refund-saving replies</span> in 8 seconds
         </h1>
         <p>
-            Paste the message. Get the retention strategy, the exact reply, and what your team should do next. Built for the message you're dreading opening.
+            Paste the message. See what you'd normally say vs what actually works. Get the strategy your team needs to keep the customer.
         </p>
         <div class="stats-bar">
             <div class="stat">
@@ -1308,14 +1319,21 @@
                 <span>Paste the customer message</span>
             </div>
 
-            <div class="tone-toggle">
-                <span class="tone-label">Tone</span>
-                <div class="tone-options">
-                    <button class="tone-btn active" id="toneCasual" onclick="setTone('casual')">Casual</button>
-                    <button class="tone-btn" id="toneProfessional" onclick="setTone('professional')">Professional</button>
+            <div class="authority-toggle">
+                <div class="authority-label">Your Authority Level</div>
+                <div class="authority-options">
+                    <button class="authority-btn active" id="authApprove" onclick="setAuthority('approve')">
+                        <span>✅</span> I can approve refunds
+                    </button>
+                    <button class="authority-btn" id="authSuggest" onclick="setAuthority('suggest')">
+                        <span>📝</span> I need approval first
+                    </button>
+                    <button class="authority-btn" id="authCalm" onclick="setAuthority('calm')">
+                        <span>🧊</span> De-escalate only
+                    </button>
                 </div>
             </div>
-            
+
             <div class="input-wrapper">
                 <textarea 
                     id="messageInput" 
@@ -1339,19 +1357,19 @@
             <div class="ghost-preview" id="ghostPreview">
                 <div class="ghost-title">
                     <span>✨</span>
-                    <span>In 8 seconds, you'll get:</span>
+                    <span>In 8 seconds, you'll see:</span>
                 </div>
                 <div class="ghost-item">
                     <div class="ghost-dot"></div>
-                    <span>Churn risk assessment</span>
+                    <span>What you'd normally reply (the risky version)</span>
                 </div>
                 <div class="ghost-item">
                     <div class="ghost-dot"></div>
-                    <span>Retention strategy</span>
+                    <span>What actually saves the customer</span>
                 </div>
                 <div class="ghost-item">
                     <div class="ghost-dot"></div>
-                    <span>Ready-to-send reply + internal action</span>
+                    <span>What your team should do next</span>
                 </div>
             </div>
         </div>
@@ -1366,7 +1384,7 @@
                 <div class="empty-state" id="emptyState">
                     <div class="empty-illustration">🎯</div>
                     <p>Paste a customer message and hit "Defuse this"</p>
-                    <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.6;">We'll assess churn risk and build your retention strategy</p>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.6;">See what you'd say vs what actually works</p>
                 </div>
 
                 <div class="theater" id="theater">
@@ -1378,11 +1396,11 @@
                         </div>
                         <div class="theater-step" id="step2">
                             <div class="step-icon">2</div>
-                            <div class="step-text">Calculating churn risk...</div>
+                            <div class="step-text">Spotting the risky reply...</div>
                         </div>
                         <div class="theater-step" id="step3">
                             <div class="step-icon">3</div>
-                            <div class="step-text">Building save strategy...</div>
+                            <div class="step-text">Building the save...</div>
                         </div>
                     </div>
                 </div>
@@ -1390,7 +1408,28 @@
                 <div class="results" id="results">
                     <div class="success-banner" id="successBanner">
                         <span>✅</span>
-                        <span id="successText">Retention strategy ready</span>
+                        <span id="successText">Here's what works</span>
+                    </div>
+
+                    <div class="pain-trigger">
+                        <span>⚠️</span>
+                        <span>Most agents lose customers here by replying too late or sounding robotic.</span>
+                    </div>
+
+                    <!-- BEFORE / AFTER -->
+                    <div class="compare-card">
+                        <div class="compare-header">
+                            <div class="compare-tab before-tab" id="tabBefore" onclick="showCompare('before')">❌ What you'd say</div>
+                            <div class="compare-tab after-tab inactive" id="tabAfter" onclick="showCompare('after')">✅ What works</div>
+                        </div>
+                        <div class="compare-body">
+                            <div class="compare-label" id="compareLabel" style="color: var(--before);">
+                                <span>⚠️</span> Typical reply — risks escalation
+                            </div>
+                            <div class="compare-text before-text" id="compareText">
+                                "We're checking this. Please wait."
+                            </div>
+                        </div>
                     </div>
 
                     <div class="result-card urgency-high" id="urgencyCard">
@@ -1416,26 +1455,20 @@
                         </div>
                         <div class="retention-grid">
                             <div class="retention-item">
-                                <div class="retention-label">Churn Risk <span class="ai-estimate">(AI estimate)</span></div>
-                                <div class="retention-value danger" id="churnRisk">82%</div>
-                                <div class="risk-bar">
-                                    <div class="risk-fill" id="riskFill" style="width: 0%; background: var(--danger);"></div>
-                                </div>
+                                <div class="retention-label">Risk Pattern</div>
+                                <div class="retention-value danger" id="riskPattern">High refund demand + churn threat</div>
                             </div>
                             <div class="retention-item">
-                                <div class="retention-label">Save Probability <span class="ai-estimate">(AI estimate)</span></div>
-                                <div class="retention-value success" id="saveProb">68%</div>
-                                <div class="risk-bar">
-                                    <div class="risk-fill" id="saveFill" style="width: 0%; background: var(--success);"></div>
-                                </div>
+                                <div class="retention-label">Response Window</div>
+                                <div class="retention-value warning" id="responseWindow">Under 10 minutes before escalation</div>
                             </div>
                             <div class="retention-item">
-                                <div class="retention-label">Best Action</div>
-                                <div class="retention-value retention" id="bestAction">Refund + credit</div>
+                                <div class="retention-label">Best Move</div>
+                                <div class="retention-value retention" id="bestMove">Own the mistake + fix fast + confirm timeline</div>
                             </div>
                             <div class="retention-item">
-                                <div class="retention-label">Value at Risk</div>
-                                <div class="retention-value warning" id="valueAtRisk">$120</div>
+                                <div class="retention-label">If They Leave</div>
+                                <div class="retention-value" id="ifLeave">Unlikely to return — first impression is final</div>
                             </div>
                         </div>
                     </div>
@@ -1443,10 +1476,9 @@
                     <div class="result-card reply">
                         <div class="result-label">
                             <span>Send this. Now.</span>
-                            <span class="ai-estimate" id="toneLabel">Casual tone</span>
                         </div>
                         <div class="reply-text" id="replyText">
-                            I'm sorry about that. I've processed your refund and escalated this for immediate review. You'll get confirmation shortly.
+                            That double charge shouldn't have happened — I'm fixing it now. I'll confirm within the hour, and you won't be charged twice.
                         </div>
                         <button class="copy-btn" id="copyBtn" onclick="handleCopy()">
                             <span>📋</span>
@@ -1454,12 +1486,17 @@
                         </button>
                     </div>
 
-                    <div class="result-card internal">
+                    <div class="result-card internal blur-overlay-card" id="internalCard">
                         <div class="result-label">
                             <span>Internal Action</span>
                         </div>
                         <div class="internal-text" id="internalText">
                             Refund now. Escalate to billing. Follow up in 24h.
+                        </div>
+                        <div class="blur-unlock" id="internalBlur" style="display: none;">
+                            <div class="blur-unlock-icon">🔒</div>
+                            <div class="blur-unlock-text">Unlock team playbook</div>
+                            <div class="blur-unlock-sub">$7 one-time</div>
                         </div>
                     </div>
 
@@ -1482,40 +1519,22 @@
         <div class="modal">
             <button class="modal-close" onclick="closePaywall()">✕</button>
             
-            <div class="modal-badge">🔥 Founding Users Only</div>
+            <div class="modal-badge">🔓 Unlock Full Power</div>
             <div class="modal-icon">🔒</div>
-            <h2>You just saved a customer.</h2>
-            <p>The next one doesn't wait. Unlock unlimited retention strategies and stop churn before it starts.</p>
-            
-            <div class="scarcity-box">
-                <span class="icon">⏰</span>
-                <span class="text">Only 50 lifetime slots at $7 — Price goes to $19 soon</span>
-            </div>
-            
-            <div class="blur-preview">
-                <div class="blur-text">
-                    Churn Risk: 87% | Best Action: Refund + 10% credit | Save Probability: 72%
-                </div>
-                <div class="blur-overlay">
-                    <div class="blur-lock">
-                        <div class="blur-lock-icon">🔒</div>
-                        <div class="blur-lock-text">Unlock Retention Strategy</div>
-                    </div>
-                </div>
-            </div>
+            <h2>You saw what works.</h2>
+            <p>Get unlimited Before/After comparisons, team playbooks, and retention strategies for every message your team handles.</p>
 
             <div class="price-tag">
                 <span class="price">$7</span>
-                <span class="price-strike">$19</span>
-                <span class="price-detail">One-time. Forever.</span>
+                <span class="price-detail">One-time. Yours forever.</span>
             </div>
 
             <button class="pay-btn" onclick="handlePayment()">
-                Unlock Defuse — $7 Early Access
+                Unlock Defuse — $7
             </button>
             
             <div class="pay-sub">
-                Hiring a retention specialist costs $4,200/mo. This is $7 once.
+                Less than one refunded order.
             </div>
         </div>
     </div>
@@ -1526,14 +1545,15 @@
     </footer>
 
     <script>
-        const STORAGE_USAGE = 'defuse_usage_v2';
-        const STORAGE_PAID = 'defuse_paid_v2';
-        const STORAGE_TONE = 'defuse_tone';
+        const STORAGE_USAGE = 'defuse_usage_v4';
+        const STORAGE_PAID = 'defuse_paid_v4';
+        const STORAGE_AUTH = 'defuse_auth_v4';
 
         let usageCount = parseInt(localStorage.getItem(STORAGE_USAGE) || '0');
         let hasPaid = localStorage.getItem(STORAGE_PAID) === 'true';
-        let currentTone = localStorage.getItem(STORAGE_TONE) || 'casual';
+        let currentAuthority = localStorage.getItem(STORAGE_AUTH) || 'approve';
         let isProcessing = false;
+        let currentCompare = 'before';
 
         const maxFreeUses = 3;
 
@@ -1560,7 +1580,7 @@
         const usageDots = document.getElementById('usageDots');
 
         function init() {
-            setTone(currentTone, false);
+            setAuthority(currentAuthority, false);
             if (hasPaid) {
                 usageCounter.classList.add('paid');
                 usageText.textContent = 'Unlimited';
@@ -1573,15 +1593,13 @@
             }
         }
 
-        function setTone(tone, persist = true) {
-            currentTone = tone;
-            if (persist) localStorage.setItem(STORAGE_TONE, tone);
+        function setAuthority(auth, persist = true) {
+            currentAuthority = auth;
+            if (persist) localStorage.setItem(STORAGE_AUTH, auth);
             
-            document.getElementById('toneCasual').classList.toggle('active', tone === 'casual');
-            document.getElementById('toneProfessional').classList.toggle('active', tone === 'professional');
-            
-            const label = document.getElementById('toneLabel');
-            if (label) label.textContent = tone === 'casual' ? 'Casual tone' : 'Professional tone';
+            document.getElementById('authApprove').classList.toggle('active', auth === 'approve');
+            document.getElementById('authSuggest').classList.toggle('active', auth === 'suggest');
+            document.getElementById('authCalm').classList.toggle('active', auth === 'calm');
         }
 
         function rotateExample() {
@@ -1589,6 +1607,30 @@
             const ex = examples[exampleIndex];
             messageInput.placeholder = ex.text;
             document.getElementById('exampleText').textContent = `Try an example: ${ex.label}`;
+        }
+
+        function showCompare(mode) {
+            currentCompare = mode;
+            const beforeTab = document.getElementById('tabBefore');
+            const afterTab = document.getElementById('tabAfter');
+            const label = document.getElementById('compareLabel');
+            const text = document.getElementById('compareText');
+            
+            if (mode === 'before') {
+                beforeTab.classList.remove('inactive');
+                afterTab.classList.add('inactive');
+                label.style.color = 'var(--before)';
+                label.innerHTML = '<span>⚠️</span> Typical reply — risks escalation';
+                text.className = 'compare-text before-text';
+                text.textContent = window.lastBeforeText || "We're checking this. Please wait.";
+            } else {
+                afterTab.classList.remove('inactive');
+                beforeTab.classList.add('inactive');
+                label.style.color = 'var(--success)';
+                label.innerHTML = '<span>✅</span> Strategic reply — saves the customer';
+                text.className = 'compare-text after-text';
+                text.textContent = window.lastAfterText || "That double charge shouldn't have happened — I'm fixing it now.";
+            }
         }
 
         messageInput.addEventListener('input', () => {
@@ -1688,24 +1730,41 @@
             let riskText = 'Escalation likely';
             let moveText = 'Refund + retention offer';
             
-            let churnRisk = 82;
-            let saveProb = 68;
-            let bestAction = 'Refund + 10% credit';
-            let valueAtRisk = '$120';
             let priority = '< 10 min';
             
-            let replyCasual = '';
-            let replyProfessional = '';
+            let beforeText = '';
+            let replyApprove = '';
+            let replySuggest = '';
+            let replyCalm = '';
             let internal = '';
+            
+            let riskPattern = '';
+            let responseWindow = '';
+            let bestMove = '';
+            let ifLeave = '';
 
             if (lower.includes('refund') || lower.includes('money') || lower.includes('charge') || lower.includes('paid') || lower.includes('twice')) {
-                churnRisk = 87;
-                saveProb = 65;
-                bestAction = 'Full refund + 10% credit';
-                valueAtRisk = '$' + (Math.floor(Math.random() * 100) + 80);
-                replyCasual = `Hey, I'm really sorry about that. I've processed your full refund—it should show up in 2-3 business days. I also added a credit to your account for the trouble. You'll get an email confirmation shortly.`;
-                replyProfessional = `We sincerely apologize for the billing error. We have processed a full refund, which will appear within 2-3 business days. Additionally, we have applied an account credit as a gesture of goodwill. You will receive a confirmation email shortly.`;
+                urgency = 'high';
+                urgencyClass = 'urgency-high';
+                badgeClass = 'badge-danger';
+                badgeEmoji = '🔴';
+                badgeText = 'High';
+                riskText = 'Refund demand + churn threat';
+                moveText = 'Own it + fix fast + confirm timeline';
+                priority = '< 10 min';
+                
+                beforeText = `We're checking this. Please wait.`;
+                
+                replyApprove = `That double charge shouldn't have happened — I'm fixing it now. I'll confirm within the hour, and you won't be charged twice.`;
+                replySuggest = `That double charge shouldn't have happened — I'm flagging this for immediate refund. My manager will approve within the hour, and I'll confirm you won't be charged twice.`;
+                replyCalm = `That double charge shouldn't have happened — I'm personally reviewing this now. I'll have a confirmed resolution and timeline for you within the hour.`;
+                
                 internal = `Process full refund immediately. Add 10% account credit. Flag account for retention monitoring. Follow up in 48h.`;
+                
+                riskPattern = `High refund demand + churn threat`;
+                responseWindow = `Under 10 minutes before they escalate to dispute`;
+                bestMove = `Own the mistake + fix fast + confirm timeline`;
+                ifLeave = `Unlikely to return — billing errors destroy trust permanently`;
             } else if (lower.includes('slow') || lower.includes('late') || lower.includes('shipping') || lower.includes('delivery') || lower.includes('arrived') || lower.includes('package')) {
                 urgency = 'med';
                 urgencyClass = 'urgency-med';
@@ -1714,14 +1773,20 @@
                 badgeText = 'Medium';
                 riskText = 'Loyalty at risk';
                 moveText = 'Expedite + compensate';
-                churnRisk = 64;
-                saveProb = 78;
-                bestAction = 'Expedite shipping + $20 credit';
-                valueAtRisk = '$85';
                 priority = '< 30 min';
-                replyCasual = `Hey, I'm sorry for the delay. I've expedited your shipment with priority tracking and added a $20 credit for the inconvenience. Your new tracking number is on the way.`;
-                replyProfessional = `We sincerely apologize for the delay in your shipment. We have upgraded your order to priority shipping and applied a $20 account credit. Your updated tracking information will be sent to you shortly.`;
+                
+                beforeText = `Shipping delays happen. Your order is in the system.`;
+                
+                replyApprove = `5 days late is on us — not you. I've upgraded you to overnight at our cost and added $20 credit. New tracking in 10 minutes.`;
+                replySuggest = `5 days late is on us — not you. I'm requesting an upgrade to overnight shipping at no charge, plus a $20 credit. My manager is approving this now. I'll send your new tracking number within 30 minutes.`;
+                replyCalm = `5 days late is on us — not you. I'm personally handling this now. I'll have an updated delivery timeline and a make-good offer for you within the next 30 minutes.`;
+                
                 internal = `Expedite shipment. Apply $20 credit. Send priority tracking. Monitor delivery personally.`;
+                
+                riskPattern = `Frustrated loyal customer + public review risk`;
+                responseWindow = `Under 30 minutes before they leave a negative review`;
+                bestMove = `Admit fault + speed + compensation without them asking`;
+                ifLeave = `60% chance they never order again after a silent delay`;
             } else if (lower.includes('bug') || lower.includes('broken') || lower.includes('error') || lower.includes('not working') || lower.includes('issue') || lower.includes('crashing')) {
                 urgency = 'med';
                 urgencyClass = 'urgency-med';
@@ -1730,23 +1795,42 @@
                 badgeText = 'Medium';
                 riskText = 'Frustration building';
                 moveText = 'Fix timeline + workaround';
-                churnRisk = 71;
-                saveProb = 72;
-                bestAction = 'Workaround + 2 months free';
-                valueAtRisk = '$60';
                 priority = '< 2 hours';
-                replyCasual = `Thanks for reporting this. Our team is actively fixing it—target release is [DATE]. Here's a workaround that should resolve it now: [LINK]. I've also added 2 free months to your account.`;
-                replyProfessional = `Thank you for bringing this to our attention. Our engineering team is actively resolving this issue, with a targeted fix scheduled for [DATE]. In the meantime, please use this workaround: [LINK]. We have also extended your subscription by two months at no charge.`;
+                
+                beforeText = `Thanks for the report. It's a known issue.`;
+                
+                replyApprove = `That crash just cost you 3 hours — that's unacceptable. Here's the fix right now: [LINK]. I'm also extending your subscription 2 months free while we patch this permanently.`;
+                replySuggest = `That crash just cost you 3 hours — that's unacceptable. Here's the fix right now: [LINK]. I'm also requesting 2 free months for the disruption — my manager will confirm within the hour. Our engineers are patching this (target: [DATE]).`;
+                replyCalm = `That crash just cost you 3 hours — that's unacceptable. Here's the fix right now: [LINK]. I'm personally tracking the fix with our engineers and will update you directly when it's live. I know this is disruptive.`;
+                
                 internal = `Log bug with engineering. Provide workaround immediately. Apply 2-month extension. Notify when fix is live.`;
+                
+                riskPattern = `Power user hitting blocker + productivity loss`;
+                responseWindow = `Under 2 hours before they switch to competitor`;
+                bestMove = `Workaround first + timeline second + compensation third`;
+                ifLeave = `Power users rarely return after a workaround fails to appear`;
             } else if (lower.includes('cancel') || lower.includes('unsubscribe') || lower.includes('close account') || lower.includes('leaving')) {
-                churnRisk = 94;
-                saveProb = 45;
-                bestAction = 'Retention call + 50% discount';
-                valueAtRisk = '$240';
+                urgency = 'high';
+                urgencyClass = 'urgency-high';
+                badgeClass = 'badge-danger';
+                badgeEmoji = '🔴';
+                badgeText = 'Critical';
+                riskText = 'Churn imminent';
+                moveText = 'Retention call + win-back';
                 priority = '< 10 min';
-                replyCasual = `I'm really sorry to hear this. Before you go, I'd love a chance to make this right. I've applied 50% off your next 3 months and scheduled a quick call with our team lead—no pressure, just want to understand what went wrong.`;
-                replyProfessional = `We are truly sorry to hear that you are considering leaving us. Before proceeding, we would welcome the opportunity to address your concerns. We have applied a 50% discount to your next three billing cycles and would like to schedule a brief call with our customer success lead at your earliest convenience.`;
+                
+                beforeText = `Sorry to see you go. Your cancellation is processed.`;
+                
+                replyApprove = `We clearly dropped the ball. Before you leave, I want to make this right — personally. I've applied 50% off your next 3 months. 10-minute call, your choice. If you're still done after that, I'll handle the cancellation myself.`;
+                replySuggest = `We clearly dropped the ball. Before you leave, I want to make this right. I'm requesting 50% off your next 3 months and a call with our lead — my manager is approving the discount now. If after the call you still want to leave, I'll process it myself.`;
+                replyCalm = `We clearly dropped the ball. Before you leave, I want to understand exactly what happened so we can make this right. Can we schedule a quick 10-minute call? No pressure — if you still want to leave after, I'll handle it personally.`;
+                
                 internal = `CRITICAL: Assign to retention specialist immediately. Apply 50% discount. Schedule call within 24h. Do NOT process cancellation without manager approval.`;
+                
+                riskPattern = `Final decision customer + word-of-mouth risk`;
+                responseWindow = `One message only — template replies kill 100% of saves`;
+                bestMove = `Personal ownership + specific offer + easy out`;
+                ifLeave = `Cancellation requests handled poorly are final — they tell others`;
             } else {
                 urgency = 'med';
                 urgencyClass = 'urgency-med';
@@ -1755,15 +1839,32 @@
                 badgeText = 'Medium';
                 riskText = 'Dissatisfied + needs validation';
                 moveText = 'Validate + specific fix';
-                churnRisk = 58;
-                saveProb = 81;
-                bestAction = 'Personal follow-up + resolution';
-                valueAtRisk = '$95';
                 priority = '< 2 hours';
-                replyCasual = `I completely understand your concern, and I'm sorry we missed the mark. Here's exactly what I'm doing to fix this: [SPECIFIC ACTION]. I'll personally check in with you by [TIME] to confirm everything is resolved.`;
-                replyProfessional = `We fully understand your concern and sincerely apologize that we did not meet your expectations. We are taking the following corrective action: [SPECIFIC ACTION]. I will personally follow up with you by [TIME] to ensure the matter is fully resolved.`;
+                
+                beforeText = `Thank you for your feedback. We take all concerns seriously.`;
+                
+                replyApprove = `You're right, and I see exactly what went wrong. I'm fixing [SPECIFIC ISSUE] now and will confirm it's resolved by [TIME]. I'll check back with you personally to make sure you're sorted.`;
+                replySuggest = `You're right, and I see exactly what went wrong. I'm flagging [SPECIFIC ISSUE] for immediate resolution — my team is on it now. I'll confirm the fix with you by [TIME] and make sure this doesn't happen again.`;
+                replyCalm = `You're right, and I see exactly what went wrong. I'm personally handling this now and will have a concrete update for you by [TIME]. I know this is frustrating, and I'm not going to leave you waiting.`;
+                
                 internal = `Acknowledge specific issue. Apply fix. Set personal follow-up reminder. Escalate if unresolved in 24h.`;
+                
+                riskPattern = `Vague dissatisfaction + testing your response quality`;
+                responseWindow = `Under 2 hours before they assume you ignored them`;
+                bestMove = `Specific acknowledgment + exact fix + personal follow-up`;
+                ifLeave = `Vague complaints become refunds when users get generic replies`;
             }
+
+            window.lastBeforeText = beforeText;
+            window.lastAfterText = currentAuthority === 'approve' ? replyApprove : (currentAuthority === 'suggest' ? replySuggest : replyCalm);
+            
+            currentCompare = 'before';
+            document.getElementById('tabBefore').classList.remove('inactive');
+            document.getElementById('tabAfter').classList.add('inactive');
+            document.getElementById('compareLabel').style.color = 'var(--before)';
+            document.getElementById('compareLabel').innerHTML = '<span>⚠️</span> Typical reply — risks escalation';
+            document.getElementById('compareText').className = 'compare-text before-text';
+            document.getElementById('compareText').textContent = beforeText;
 
             const urgencyCard = document.getElementById('urgencyCard');
             urgencyCard.className = `result-card ${urgencyClass}`;
@@ -1773,18 +1874,25 @@
             document.getElementById('moveText').textContent = moveText;
 
             document.getElementById('priorityBadge').textContent = `Handle in ${priority}`;
-            document.getElementById('churnRisk').textContent = churnRisk + '%';
-            document.getElementById('saveProb').textContent = saveProb + '%';
-            document.getElementById('bestAction').textContent = bestAction;
-            document.getElementById('valueAtRisk').textContent = valueAtRisk;
+            document.getElementById('riskPattern').textContent = riskPattern;
+            document.getElementById('responseWindow').textContent = responseWindow;
+            document.getElementById('bestMove').textContent = bestMove;
+            document.getElementById('ifLeave').textContent = ifLeave;
 
-            setTimeout(() => {
-                document.getElementById('riskFill').style.width = churnRisk + '%';
-                document.getElementById('saveFill').style.width = saveProb + '%';
-            }, 100);
-
-            document.getElementById('replyText').textContent = currentTone === 'casual' ? replyCasual : replyProfessional;
+            const finalReply = currentAuthority === 'approve' ? replyApprove : (currentAuthority === 'suggest' ? replySuggest : replyCalm);
+            document.getElementById('replyText').textContent = finalReply;
             document.getElementById('internalText').textContent = internal;
+
+            // Blur internal action for free users
+            const internalBlur = document.getElementById('internalBlur');
+            const internalCard = document.getElementById('internalCard');
+            if (!hasPaid) {
+                internalBlur.style.display = 'flex';
+                internalCard.classList.add('blur-overlay-card');
+            } else {
+                internalBlur.style.display = 'none';
+                internalCard.classList.remove('blur-overlay-card');
+            }
         }
 
         function updateUsageDots() {
